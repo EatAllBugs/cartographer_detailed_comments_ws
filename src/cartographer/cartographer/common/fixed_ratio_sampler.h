@@ -36,7 +36,8 @@ class FixedRatioSampler {
   FixedRatioSampler& operator=(const FixedRatioSampler&) = delete;
 
   // Returns true if this pulse should result in an sample.
-  // 在比例小于ratio_时返回true, ratio_设置为1时都返回true, 也就是说使用所有的数据
+  // 在比例小于ratio_时返回true, ratio_设置为1时都返回true,
+  // 也就是说使用所有的数据
   bool Pulse();
 
   // Returns a debug string describing the current ratio of samples to pulses.

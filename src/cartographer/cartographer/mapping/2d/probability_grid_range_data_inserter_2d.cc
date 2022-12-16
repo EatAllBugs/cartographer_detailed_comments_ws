@@ -54,11 +54,11 @@ void GrowAsNeeded(const sensor::RangeData& range_data,
 
 /**
  * @brief 根据雷达点对栅格地图进行更新
- * 
- * @param[in] range_data 
+ *
+ * @param[in] range_data
  * @param[in] hit_table 更新占用栅格时的查找表
  * @param[in] miss_table 更新空闲栅格时的查找表
- * @param[in] insert_free_space 
+ * @param[in] insert_free_space
  * @param[in] probability_grid 栅格地图
  */
 void CastRays(const sensor::RangeData& range_data,
@@ -86,7 +86,7 @@ void CastRays(const sensor::RangeData& range_data,
     // 更新hit点的栅格值
     probability_grid->ApplyLookupTable(ends.back() / kSubpixelScale, hit_table);
   }
-  
+
   // 如果不插入free空间就可以结束了
   if (!insert_free_space) {
     return;
@@ -138,14 +138,14 @@ ProbabilityGridRangeDataInserter2D::ProbabilityGridRangeDataInserter2D(
     : options_(options),
       // 生成更新占用栅格时的查找表 // param: hit_probability
       hit_table_(ComputeLookupTableToApplyCorrespondenceCostOdds(
-          Odds(options.hit_probability()))),    // 0.55
+          Odds(options.hit_probability()))),  // 0.55
       // 生成更新空闲栅格时的查找表 // param: miss_probability
       miss_table_(ComputeLookupTableToApplyCorrespondenceCostOdds(
-          Odds(options.miss_probability()))) {} // 0.49
+          Odds(options.miss_probability()))) {}  // 0.49
 
 /**
  * @brief 将点云写入栅格地图
- * 
+ *
  * @param[in] range_data 要写入地图的点云
  * @param[in] grid 栅格地图
  */

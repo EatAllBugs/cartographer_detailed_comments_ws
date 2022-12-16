@@ -51,7 +51,8 @@ struct SubmapSlice {
   int version;
   double resolution;
   ::cartographer::transform::Rigid3d slice_pose;
-  ::cartographer::io::UniqueCairoSurfacePtr surface;    // surface是图形库cairo的image画布
+  ::cartographer::io::UniqueCairoSurfacePtr
+      surface;  // surface是图形库cairo的image画布
   // Pixel data used by 'surface'. Must outlive 'surface'.
   std::vector<uint32_t> cairo_data;
 

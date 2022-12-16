@@ -29,7 +29,7 @@ Eigen::Affine3d ToEigen(const ::cartographer::transform::Rigid3d& rigid3) {
 
 /**
  * @brief 使用传入的函数对传入的submap_slice进行处理
- * 
+ *
  * @param[in] scale 分辨率的倒数
  * @param[in] submaps 需要处理的submap_slice
  * @param[in] cr 当前画布
@@ -87,10 +87,10 @@ bool Has3DGrids(const mapping::proto::Submap& submap) {
 
 /**
  * @brief 绘制栅格地图的cairo图像
- * 
+ *
  * @param[in] submaps 地图图片
  * @param[in] resolution 地图分辨率
- * @return PaintSubmapSlicesResult 
+ * @return PaintSubmapSlicesResult
  */
 PaintSubmapSlicesResult PaintSubmapSlices(
     const std::map<::cartographer::mapping::SubmapId, SubmapSlice>& submaps,
@@ -130,7 +130,7 @@ PaintSubmapSlicesResult PaintSubmapSlices(
   // 要返回的结果
   auto surface = MakeUniqueCairoSurfacePtr(
       cairo_image_surface_create(kCairoFormat, size.x(), size.y()));
-  
+
   {
     auto cr = MakeUniqueCairoPtr(cairo_create(surface.get()));
     // 设置颜色
@@ -151,7 +151,7 @@ PaintSubmapSlicesResult PaintSubmapSlices(
                            });
     cairo_surface_flush(surface.get());
   }
-  
+
   return PaintSubmapSlicesResult(std::move(surface), origin);
 }
 
@@ -214,7 +214,7 @@ void DeserializeAndFillSubmapSlices(
 
 /**
  * @brief 将地图栅格数据进行解压
- * 
+ *
  * @param[in] compressed_cells 压缩后的地图栅格数据
  * @param[in] width 地图的宽
  * @param[in] height 地图的高
@@ -226,7 +226,7 @@ SubmapTexture::Pixels UnpackTextureData(const std::string& compressed_cells,
   std::string cells;
   // 将压缩后的地图栅格数据 解压成 字符串
   ::cartographer::common::FastGunzipString(compressed_cells, &cells);
-  
+
   const int num_pixels = width * height;
   CHECK_EQ(cells.size(), 2 * num_pixels);
   pixels.intensity.reserve(num_pixels);
@@ -245,12 +245,13 @@ SubmapTexture::Pixels UnpackTextureData(const std::string& compressed_cells,
 
 /**
  * @brief 指向新创建的图像的指针
- * 
+ *
  * @param[in] intensity 地图栅格数据
  * @param[in] alpha 地图栅格的透明度
  * @param[in] width 地图的宽
  * @param[in] height 地图的高
- * @param[out] cairo_data 4字节的值, 左边3个字节分别存储了alpha_value intensity_value 与 observed
+ * @param[out] cairo_data 4字节的值, 左边3个字节分别存储了alpha_value
+ * intensity_value 与 observed
  * @return UniqueCairoSurfacePtr 指向新创建的图像的指针
  */
 UniqueCairoSurfacePtr DrawTexture(const std::vector<char>& intensity,
@@ -263,7 +264,7 @@ UniqueCairoSurfacePtr DrawTexture(const std::vector<char>& intensity,
   // complicated. Let's check that it is not needed.
   const int expected_stride = 4 * width;
   CHECK_EQ(expected_stride, cairo_format_stride_for_width(kCairoFormat, width));
-  
+
   // 对cairo_data进行填充
   for (size_t i = 0; i < intensity.size(); ++i) {
     // We use the red channel to track intensity information. The green
@@ -274,21 +275,23 @@ UniqueCairoSurfacePtr DrawTexture(const std::vector<char>& intensity,
     const uint8_t observed =
         (intensity_value == 0 && alpha_value == 0) ? 0 : 255;
     // tag: 这里需要确认一下
-    cairo_data->push_back((alpha_value << 24) |     // 第一字节 存储透明度
-                          (intensity_value << 16) | // 第二字节 存储栅格值
-                          (observed << 8) |         // 第三字节 存储是否被更新过
-                          0);                       // 第四字节 始终为0
+    cairo_data->push_back((alpha_value << 24) |  // 第一字节 存储透明度
+                          (intensity_value << 16) |  // 第二字节 存储栅格值
+                          (observed << 8) |  // 第三字节 存储是否被更新过
+                          0);                // 第四字节 始终为0
   }
 
-  // c++11: reinterpret_cast 用于进行各种不同类型的指针之间、不同类型的引用之间以及指针和能容纳指针的整数类型之间的转换
+  // c++11: reinterpret_cast
+  // 用于进行各种不同类型的指针之间、不同类型的引用之间以及指针和能容纳指针的整数类型之间的转换
 
   // MakeUniqueCairoSurfacePtr 生成一个指向cairo_surface_t数据的指针
   auto surface = MakeUniqueCairoSurfacePtr(
-    // cairo_image_surface_create_for_data: 根据提供的像素数据创建surface, 返回指向新创建的surface的指针
-    cairo_image_surface_create_for_data(
-      reinterpret_cast<unsigned char*>(cairo_data->data()), kCairoFormat, width,
-      height, expected_stride) );
-        
+      // cairo_image_surface_create_for_data: 根据提供的像素数据创建surface,
+      // 返回指向新创建的surface的指针
+      cairo_image_surface_create_for_data(
+          reinterpret_cast<unsigned char*>(cairo_data->data()), kCairoFormat,
+          width, height, expected_stride));
+
   CHECK_EQ(cairo_surface_status(surface.get()), CAIRO_STATUS_SUCCESS)
       << cairo_status_to_string(cairo_surface_status(surface.get()));
   return surface;

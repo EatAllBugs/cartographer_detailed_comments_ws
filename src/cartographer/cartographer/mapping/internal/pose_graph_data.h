@@ -35,7 +35,8 @@ namespace mapping {
 // transitions to 'kFinished', all nodes are tried to match
 // against this submap. Likewise, all new nodes are matched against submaps in
 // that state.
-// 后台线程中子图的当前状态.在此转换为“kFinished”之后, 所有节点都将尝试与此子图匹配, 进行回环检测. 
+// 后台线程中子图的当前状态.在此转换为“kFinished”之后,
+// 所有节点都将尝试与此子图匹配, 进行回环检测.
 // 同样, 所有新节点都与kNoConstraintSearch状态下的子图匹配.
 enum class SubmapState { kNoConstraintSearch, kFinished };
 
@@ -78,7 +79,8 @@ struct PoseGraphData {
   MapById<SubmapId, optimization::SubmapSpec3D> global_submap_poses_3d;
 
   // Data that are currently being shown.
-  // 所有的轨迹节点的id与 节点的在global坐标系下的坐标, 在local map 下的坐标与时间
+  // 所有的轨迹节点的id与 节点的在global坐标系下的坐标, 在local map
+  // 下的坐标与时间
   MapById<NodeId, TrajectoryNode> trajectory_nodes;
 
   // Global landmark poses with all observations.

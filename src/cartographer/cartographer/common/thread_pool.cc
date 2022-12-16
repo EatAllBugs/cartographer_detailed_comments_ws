@@ -81,7 +81,7 @@ std::weak_ptr<Task> ThreadPool::Schedule(std::unique_ptr<Task> task) {
     auto insert_result =
         tasks_not_ready_.insert(std::make_pair(task.get(), std::move(task)));
 
-    // map::insert() 会返回pair<map::iterator,bool> 类型, 
+    // map::insert() 会返回pair<map::iterator,bool> 类型,
     // 第一个值为迭代器, 第二个值为插入操作是否成功
     CHECK(insert_result.second) << "Schedule called twice";
     shared_task = insert_result.first->second;

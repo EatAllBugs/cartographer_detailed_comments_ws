@@ -23,9 +23,9 @@ namespace mapping {
 
 /**
  * @brief 根据lua字典中的参数, 生成protobuf的序列化数据结构
- * 
+ *
  * @param[in] parameter_dictionary lua字典
- * @return proto::MapBuilderOptions 
+ * @return proto::MapBuilderOptions
  */
 proto::MapBuilderOptions CreateMapBuilderOptions(
     common::LuaParameterDictionary* const parameter_dictionary) {

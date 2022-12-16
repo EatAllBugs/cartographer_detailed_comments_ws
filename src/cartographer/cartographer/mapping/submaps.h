@@ -60,14 +60,13 @@ inline uint8 ProbabilityToLogOddsInteger(const float probability) {
 
 /**
  * @brief 独立的子地图, 3个功能
- * 
+ *
  * 保存在local坐标系下的子图的坐标
  * 记录插入到子图中雷达数据的个数
  * 标记这个子图是否是完成状态
  */
 class Submap {
  public:
-
   // 构造函数, 将传入的local_submap_pose作为子图的坐标原点
   Submap(const transform::Rigid3d& local_submap_pose)
       : local_pose_(local_submap_pose) {}
@@ -99,7 +98,7 @@ class Submap {
   }
 
  private:
-  const transform::Rigid3d local_pose_; // 子图原点在local坐标系下的坐标
+  const transform::Rigid3d local_pose_;  // 子图原点在local坐标系下的坐标
   int num_range_data_ = 0;
   bool insertion_finished_ = false;
 };

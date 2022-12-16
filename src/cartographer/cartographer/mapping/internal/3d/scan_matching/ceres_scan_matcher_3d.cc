@@ -88,13 +88,13 @@ CeresScanMatcher3D::CeresScanMatcher3D(
 }
 
 /**
- * @brief 
- * 
- * @param[in] target_translation 
- * @param[in] initial_pose_estimate 
+ * @brief
+ *
+ * @param[in] target_translation
+ * @param[in] initial_pose_estimate
  * @param[in] point_clouds_and_hybrid_grids 高分辨率地图与低分辨率地图的集合
- * @param[out] pose_estimate 
- * @param[out] summary 
+ * @param[out] pose_estimate
+ * @param[out] summary
  */
 void CeresScanMatcher3D::Match(
     const Eigen::Vector3d& target_translation,

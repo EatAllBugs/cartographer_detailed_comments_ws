@@ -40,14 +40,15 @@ namespace mapping {
 
 /**
  * note: 地图坐标系可视化展示
- * ros的地图坐标系    cartographer的地图坐标系     cartographer地图的像素坐标系 
- * 
+ * ros的地图坐标系    cartographer的地图坐标系     cartographer地图的像素坐标系
+ *
  * ^ y                            ^ x              0------> x
  * |                              |                |
  * |                              |                |
- * 0 ------> x           y <------0                y       
- * 
- * ros的地图坐标系: 左下角为原点, 向右为x正方向, 向上为y正方向, 角度以x轴正向为0度, 逆时针为正
+ * 0 ------> x           y <------0                y
+ *
+ * ros的地图坐标系: 左下角为原点, 向右为x正方向, 向上为y正方向,
+ * 角度以x轴正向为0度, 逆时针为正
  * cartographer的地图坐标系: 坐标系右下角为原点, 向上为x正方向, 向左为y正方向
  *             角度正方向以x轴正向为0度, 逆时针为正
  * cartographer地图的像素坐标系: 左上角为原点, 向右为x正方向, 向下为y正方向
@@ -56,7 +57,7 @@ class MapLimits {
  public:
   /**
    * @brief 构造函数
-   * 
+   *
    * @param[in] resolution 地图分辨率
    * @param[in] max 左上角的坐标为地图坐标的最大值
    * @param[in] cell_limits 地图x方向与y方向的格子数
@@ -117,7 +118,7 @@ class MapLimits {
 
  private:
   double resolution_;
-  Eigen::Vector2d max_;    // cartographer地图坐标系左上角为坐标系的坐标的最大值
+  Eigen::Vector2d max_;  // cartographer地图坐标系左上角为坐标系的坐标的最大值
   CellLimits cell_limits_;
 };
 

@@ -26,13 +26,13 @@ Task::~Task() {
   }
 }
 
-// 返回本Task当前状态 
+// 返回本Task当前状态
 Task::State Task::GetState() {
   absl::MutexLock locker(&mutex_);
   return state_;
 }
 
-// 设置本Task需要执行的任务 （函数） 
+// 设置本Task需要执行的任务 （函数）
 // 状态: NEW
 void Task::SetWorkItem(const WorkItem& work_item) {
   absl::MutexLock locker(&mutex_);
@@ -40,12 +40,14 @@ void Task::SetWorkItem(const WorkItem& work_item) {
   work_item_ = work_item;
 }
 
-// c++11: std::weak_ptr weak_ptr被设计为与shared_ptr共同工作, 
+// c++11: std::weak_ptr weak_ptr被设计为与shared_ptr共同工作,
 // 可以从一个shared_ptr或者另一个weak_ptr对象构造, 获得资源的观测权
 // 但weak_ptr没有共享资源, 它的构造不会引起指针引用计数的增加.
 // 同样, 在weak_ptr析构时也不会导致引用计数的减少, 它只是一个静静地观察者.
-// weak_ptr没有重载operator*和->, 这是特意的, 因为它不共享指针, 不能操作资源, 这是它弱的原因
-// 但它可以使用一个非常重要的成员函数lock()从被观测的shared_ptr获得一个可用的shared_ptr对象, 从而操作资源.
+// weak_ptr没有重载operator*和->, 这是特意的, 因为它不共享指针, 不能操作资源,
+// 这是它弱的原因
+// 但它可以使用一个非常重要的成员函数lock()从被观测的shared_ptr获得一个可用的shared_ptr对象,
+// 从而操作资源.
 
 // 为本任务添加依赖
 void Task::AddDependency(std::weak_ptr<Task> dependency) {
@@ -58,14 +60,15 @@ void Task::AddDependency(std::weak_ptr<Task> dependency) {
       ++uncompleted_dependencies_;
     }
   }
-  
+
   if (shared_dependency) {
     // 将本task加入到shared_dependency的集合dependent_tasks_中
     shared_dependency->AddDependentTask(this);
   }
 }
 
-// 将线程池与本任务连接起来, 如果没有未完成的依赖, 则告诉线程池可以将本任务放入到执行队列中
+// 将线程池与本任务连接起来, 如果没有未完成的依赖,
+// 则告诉线程池可以将本任务放入到执行队列中
 // 状态: NEW -> DISPATCHED || NEW -> DISPATCHED -> DEPENDENCIES_COMPLETED
 void Task::SetThreadPool(ThreadPoolInterface* thread_pool) {
   absl::MutexLock locker(&mutex_);

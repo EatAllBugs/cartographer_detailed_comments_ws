@@ -64,10 +64,10 @@ inline float CorrespondenceCostToProbability(const float correspondence_cost) {
   return 1.f - correspondence_cost;
 }
 
-constexpr float kMinProbability = 0.1f;                         // 0.1
-constexpr float kMaxProbability = 1.f - kMinProbability;        // 0.9
-constexpr float kMinCorrespondenceCost = 1.f - kMaxProbability; // 0.1
-constexpr float kMaxCorrespondenceCost = 1.f - kMinProbability; // 0.9
+constexpr float kMinProbability = 0.1f;                          // 0.1
+constexpr float kMaxProbability = 1.f - kMinProbability;         // 0.9
+constexpr float kMinCorrespondenceCost = 1.f - kMaxProbability;  // 0.1
+constexpr float kMaxCorrespondenceCost = 1.f - kMinProbability;  // 0.9
 
 // Clamps probability to be in the range [kMinProbability, kMaxProbability].
 // 对数据进行上下界的限定
@@ -83,9 +83,9 @@ inline float ClampCorrespondenceCost(const float correspondence_cost) {
                        kMaxCorrespondenceCost);
 }
 
-constexpr uint16 kUnknownProbabilityValue = 0; // 0
-constexpr uint16 kUnknownCorrespondenceValue = kUnknownProbabilityValue; // 0
-constexpr uint16 kUpdateMarker = 1u << 15; // 32768
+constexpr uint16 kUnknownProbabilityValue = 0;                            // 0
+constexpr uint16 kUnknownCorrespondenceValue = kUnknownProbabilityValue;  // 0
+constexpr uint16 kUpdateMarker = 1u << 15;  // 32768
 
 // Converts a correspondence_cost to a uint16 in the [1, 32767] range.
 // 将浮点数correspondence_cost转成[1, 32767]范围内的 uint16 整数
@@ -99,7 +99,6 @@ inline uint16 CorrespondenceCostToValue(const float correspondence_cost) {
 inline uint16 ProbabilityToValue(const float probability) {
   return BoundedFloatToValue(probability, kMinProbability, kMaxProbability);
 }
-
 
 // c++11: extern c风格
 extern const std::vector<float>* const kValueToProbability;

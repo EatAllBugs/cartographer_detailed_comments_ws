@@ -68,13 +68,11 @@ class SubmapController {
 };
 
 template <>
-std::shared_ptr<mapping::Submap2D>
-SubmapController<mapping::Submap2D>::CreateSubmap(
-    const mapping::proto::Submap& proto);
+std::shared_ptr<mapping::Submap2D> SubmapController<
+    mapping::Submap2D>::CreateSubmap(const mapping::proto::Submap& proto);
 template <>
-std::shared_ptr<mapping::Submap3D>
-SubmapController<mapping::Submap3D>::CreateSubmap(
-    const mapping::proto::Submap& proto);
+std::shared_ptr<mapping::Submap3D> SubmapController<
+    mapping::Submap3D>::CreateSubmap(const mapping::proto::Submap& proto);
 
 }  // namespace mapping
 }  // namespace cartographer

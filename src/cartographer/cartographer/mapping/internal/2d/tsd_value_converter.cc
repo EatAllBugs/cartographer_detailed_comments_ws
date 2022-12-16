@@ -21,7 +21,7 @@ namespace mapping {
 
 /**
  * @brief 构造函数
- * 
+ *
  * @param[in] max_tsd 0.3
  * @param[in] max_weight 10.0
  * @param[in] conversion_tables 转换表

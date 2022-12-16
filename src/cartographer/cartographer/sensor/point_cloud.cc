@@ -59,7 +59,7 @@ void PointCloud::push_back(PointCloud::PointType value) {
 
 /**
  * @brief 对输入的点云做坐标变换
- * 
+ *
  * @param[in] point_cloud 输入的点云
  * @param[in] transform 坐标变换
  * @return PointCloud 变换之后的点云
@@ -76,7 +76,7 @@ PointCloud TransformPointCloud(const PointCloud& point_cloud,
 
 /**
  * @brief 返回坐标变换后的点云
- * 
+ *
  * @param[in] point_cloud 点云数据
  * @param[in] transform 旋转变换矩阵
  * @return TimedPointCloud 返回坐标变换后的点云
@@ -93,7 +93,7 @@ TimedPointCloud TransformTimedPointCloud(const TimedPointCloud& point_cloud,
 
 /**
  * @brief 对输入的点云进行滤波, 保留数据点的z坐标处于min_z与max_z之间的点
- * 
+ *
  * @param[in] point_cloud 输入的点云
  * @param[in] min_z 最小的z
  * @param[in] max_z 最大的z
@@ -101,7 +101,7 @@ TimedPointCloud TransformTimedPointCloud(const TimedPointCloud& point_cloud,
  */
 PointCloud CropPointCloud(const PointCloud& point_cloud, const float min_z,
                           const float max_z) {
-  // 将lamda表达式传入copy_if, 当lamda表达式返回true时才进行复制, 
+  // 将lamda表达式传入copy_if, 当lamda表达式返回true时才进行复制,
   return point_cloud.copy_if([min_z, max_z](const RangefinderPoint& point) {
     return min_z <= point.position.z() && point.position.z() <= max_z;
   });

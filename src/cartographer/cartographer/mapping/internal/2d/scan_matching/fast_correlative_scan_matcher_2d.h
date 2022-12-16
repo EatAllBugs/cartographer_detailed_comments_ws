@@ -90,7 +90,7 @@ class PrecomputationGrid2D {
   const float max_score_;
 
   // Probabilites mapped to 0 to 255.
-  std::vector<uint8> cells_; // 不同分辨率的栅格地图
+  std::vector<uint8> cells_;  // 不同分辨率的栅格地图
 };
 
 class PrecomputationGridStack2D {

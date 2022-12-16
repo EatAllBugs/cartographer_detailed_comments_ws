@@ -78,7 +78,7 @@ class Rigid2 {
   }
 
   // T = [R t] T^-1 = [R^-1  -R^-1 * t]
-  //     [0 1]        [0         1    ] 
+  //     [0 1]        [0         1    ]
   // R是旋转矩阵, 特殊正交群, 所以R^-1 = R^T
   Rigid2 inverse() const {
     const Rotation2D rotation = rotation_.inverse();
@@ -170,7 +170,7 @@ class Rigid3 {
   const Quaternion& rotation() const { return rotation_; }
 
   // T = [R t] T^-1 = [R^-1  -R^-1 * t]
-  //     [0 1]        [0         1    ] 
+  //     [0 1]        [0         1    ]
   // R是旋转矩阵, 特殊正交群, 所以R^-1 = R^T
   Rigid3 inverse() const {
     const Quaternion rotation = rotation_.conjugate();

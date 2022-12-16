@@ -120,16 +120,14 @@ TEST_F(RangeDataInserterTest2D, ProbabilityProgression) {
   for (int i = 0; i < 1000; ++i) {
     InsertPointCloud();
   }
-  EXPECT_NEAR(
-      kMaxProbability,
-      probability_grid_.GetProbability(probability_grid_.limits().GetCellIndex(
-          Eigen::Vector2f(-3.5f, 0.5f))),
-      1e-3);
-  EXPECT_NEAR(
-      kMinProbability,
-      probability_grid_.GetProbability(probability_grid_.limits().GetCellIndex(
-          Eigen::Vector2f(-2.5f, 0.5f))),
-      1e-3);
+  EXPECT_NEAR(kMaxProbability, probability_grid_.GetProbability(
+                                   probability_grid_.limits().GetCellIndex(
+                                       Eigen::Vector2f(-3.5f, 0.5f))),
+              1e-3);
+  EXPECT_NEAR(kMinProbability, probability_grid_.GetProbability(
+                                   probability_grid_.limits().GetCellIndex(
+                                       Eigen::Vector2f(-2.5f, 0.5f))),
+              1e-3);
 }
 
 }  // namespace

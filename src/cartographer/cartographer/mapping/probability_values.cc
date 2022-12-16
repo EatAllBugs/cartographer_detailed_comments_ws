@@ -58,9 +58,10 @@ std::unique_ptr<std::vector<float>> PrecomputeValueToBoundedFloat(
 
 // 返回ValueToProbability转换表的指针
 std::unique_ptr<std::vector<float>> PrecomputeValueToProbability() {
-  return PrecomputeValueToBoundedFloat(kUnknownProbabilityValue,          // 0
-                                       kMinProbability, kMinProbability,  // 0.1, 0.1
-                                       kMaxProbability);                  // 0.9
+  return PrecomputeValueToBoundedFloat(kUnknownProbabilityValue,  // 0
+                                       kMinProbability,
+                                       kMinProbability,   // 0.1, 0.1
+                                       kMaxProbability);  // 0.9
 }
 
 // 返回ValueToCorrespondenceCost转换表的指针
@@ -86,8 +87,9 @@ std::vector<uint16> ComputeLookupTableToApplyOdds(const float odds) {
   result.reserve(kValueCount);
   // 当前cell是unknown情况下直接把 odd转成概率值付给cell
   result.push_back(ProbabilityToValue(ProbabilityFromOdds(odds)) +
-                   kUpdateMarker); // 加上kUpdateMarker作为一个标志, 代表这个栅格已经被更新了
-  // 计算更新时 从1到32768的所有可能的 更新后的结果 
+                   kUpdateMarker);  // 加上kUpdateMarker作为一个标志,
+                                    // 代表这个栅格已经被更新了
+  // 计算更新时 从1到32768的所有可能的 更新后的结果
   for (int cell = 1; cell != kValueCount; ++cell) {
     result.push_back(ProbabilityToValue(ProbabilityFromOdds(
                          odds * Odds((*kValueToProbability)[cell]))) +
@@ -100,13 +102,14 @@ std::vector<uint16> ComputeLookupTableToApplyOdds(const float odds) {
 std::vector<uint16> ComputeLookupTableToApplyCorrespondenceCostOdds(
     float odds) {
   std::vector<uint16> result;
-  result.reserve(kValueCount); // 32768
+  result.reserve(kValueCount);  // 32768
 
   // 当前cell是unknown情况下直接把odds转成value存进来
   result.push_back(CorrespondenceCostToValue(ProbabilityToCorrespondenceCost(
                        ProbabilityFromOdds(odds))) +
-                   kUpdateMarker); // 加上kUpdateMarker作为一个标志, 代表这个栅格已经被更新了
-  // 计算更新时 从1到32768的所有可能的 更新后的结果 
+                   kUpdateMarker);  // 加上kUpdateMarker作为一个标志,
+                                    // 代表这个栅格已经被更新了
+  // 计算更新时 从1到32768的所有可能的 更新后的结果
   for (int cell = 1; cell != kValueCount; ++cell) {
     result.push_back(
         CorrespondenceCostToValue(

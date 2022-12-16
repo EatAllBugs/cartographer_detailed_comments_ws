@@ -27,8 +27,9 @@ namespace cartographer {
 namespace common {
 
 /**
- * @brief Construct a new Configuration File Resolver:: Configuration File Resolver object
- * 
+ * @brief Construct a new Configuration File Resolver:: Configuration File
+ * Resolver object
+ *
  * @param[in] configuration_files_directories 配置文件目录
  */
 ConfigurationFileResolver::ConfigurationFileResolver(
@@ -39,7 +40,7 @@ ConfigurationFileResolver::ConfigurationFileResolver(
 
 /**
  * @brief 在所有的配置文件目录中 根据给定配置文件的名字 搜索 配置文件
- * 
+ *
  * @param[in] basename 给定配置文件的名字
  * @return std::string 如果搜索成功, 返回配置文件的全路径名
  */
@@ -60,7 +61,7 @@ std::string ConfigurationFileResolver::GetFullPathOrDie(
 
 /**
  * @brief 读取配置文件内容
- * 
+ *
  * @param[in] basename 文件名
  * @return std::string 文件内容的数据流
  */

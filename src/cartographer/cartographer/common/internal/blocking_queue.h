@@ -34,16 +34,20 @@ namespace common {
 // 一个线程安全的阻塞队列, 对 生产者/消费者模式 很有用.
 
 /**
-  为什么要使用生产者消费者模式, 顺序执行不就可以了吗？生产者消费者到底有什么意义？
+  为什么要使用生产者消费者模式,
+  顺序执行不就可以了吗？生产者消费者到底有什么意义？
 
   解耦
   生产者和消费者之间不直接依赖, 通过缓冲区通讯, 将两个类之间的耦合度降到最低。
 
   并发 （异步）
-  生产者直接调用消费者, 两者是同步（阻塞）的, 如果消费者吞吐数据很慢, 这时候生产者白白浪费大好时光。
-  而使用这种模式之后, 生产者将数据丢到缓冲区, 继续生产, 完全不依赖消费者, 程序执行效率会大大提高。
+  生产者直接调用消费者, 两者是同步（阻塞）的, 如果消费者吞吐数据很慢,
+  这时候生产者白白浪费大好时光。
+  而使用这种模式之后, 生产者将数据丢到缓冲区, 继续生产, 完全不依赖消费者,
+  程序执行效率会大大提高。
 
-  复用：通过将生产者类和消费者类独立开来, 可以对生产者类和消费者类进行独立的复用与扩展
+  复用：通过将生产者类和消费者类独立开来,
+  可以对生产者类和消费者类进行独立的复用与扩展
  */
 
 template <typename T>
@@ -66,9 +70,8 @@ class BlockingQueue {
   // 将值压入队列. 如果队列已满, 则阻塞
   void Push(T t) {
     // 首先定义判断函数
-    const auto predicate = [this]() EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
-      return QueueNotFullCondition();
-    };
+    const auto predicate = [this]()
+        EXCLUSIVE_LOCKS_REQUIRED(mutex_) { return QueueNotFullCondition(); };
 
     // absl::Mutex的更多信息可看: https://www.jianshu.com/p/d2834abd6796
     // absl官网: https://abseil.io/about/
@@ -84,9 +87,8 @@ class BlockingQueue {
   // Like push, but returns false if 'timeout' is reached.
   // 与Push()类似, 但是超时后返回false
   bool PushWithTimeout(T t, const common::Duration timeout) {
-    const auto predicate = [this]() EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
-      return QueueNotFullCondition();
-    };
+    const auto predicate = [this]()
+        EXCLUSIVE_LOCKS_REQUIRED(mutex_) { return QueueNotFullCondition(); };
     absl::MutexLock lock(&mutex_);
     if (!mutex_.AwaitWithTimeout(absl::Condition(&predicate),
                                  absl::FromChrono(timeout))) {
@@ -99,9 +101,8 @@ class BlockingQueue {
   // Pops the next value from the queue. Blocks until a value is available.
   // 取出数据, 如果数据队列为空则进行等待
   T Pop() {
-    const auto predicate = [this]() EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
-      return !QueueEmptyCondition();
-    };
+    const auto predicate = [this]()
+        EXCLUSIVE_LOCKS_REQUIRED(mutex_) { return !QueueEmptyCondition(); };
     // 等待直到数据队列中至少有一个数据
     absl::MutexLock lock(&mutex_);
     mutex_.Await(absl::Condition(&predicate));
@@ -114,9 +115,8 @@ class BlockingQueue {
   // Like Pop, but can timeout. Returns nullptr in this case.
   // 与Pop()类似, 但是超时后返回nullptr
   T PopWithTimeout(const common::Duration timeout) {
-    const auto predicate = [this]() EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
-      return !QueueEmptyCondition();
-    };
+    const auto predicate = [this]()
+        EXCLUSIVE_LOCKS_REQUIRED(mutex_) { return !QueueEmptyCondition(); };
     absl::MutexLock lock(&mutex_);
     if (!mutex_.AwaitWithTimeout(absl::Condition(&predicate),
                                  absl::FromChrono(timeout))) {
@@ -131,9 +131,8 @@ class BlockingQueue {
   // 与Peek()类似, 但是超时后返回nullptr
   template <typename R>
   R* PeekWithTimeout(const common::Duration timeout) {
-    const auto predicate = [this]() EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
-      return !QueueEmptyCondition();
-    };
+    const auto predicate = [this]()
+        EXCLUSIVE_LOCKS_REQUIRED(mutex_) { return !QueueEmptyCondition(); };
     absl::MutexLock lock(&mutex_);
     if (!mutex_.AwaitWithTimeout(absl::Condition(&predicate),
                                  absl::FromChrono(timeout))) {
@@ -165,9 +164,8 @@ class BlockingQueue {
   // Blocks until the queue is empty.
   // 等待直到队列为空
   void WaitUntilEmpty() {
-    const auto predicate = [this]() EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
-      return QueueEmptyCondition();
-    };
+    const auto predicate = [this]()
+        EXCLUSIVE_LOCKS_REQUIRED(mutex_) { return QueueEmptyCondition(); };
     absl::MutexLock lock(&mutex_);
     mutex_.Await(absl::Condition(&predicate));
   }

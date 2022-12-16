@@ -24,7 +24,8 @@ void TrajectoryConnectivityState::Add(const int trajectory_id) {
   connected_components_.Add(trajectory_id);
 }
 
-// 连接两条轨迹. 如果任一轨迹未跟踪, 则将对其进行跟踪,重复调用 Connect 会增加连接计数并更新上次连接时间
+// 连接两条轨迹. 如果任一轨迹未跟踪, 则将对其进行跟踪,重复调用 Connect
+// 会增加连接计数并更新上次连接时间
 void TrajectoryConnectivityState::Connect(const int trajectory_id_a,
                                           const int trajectory_id_b,
                                           const common::Time time) {
@@ -43,9 +44,10 @@ void TrajectoryConnectivityState::Connect(const int trajectory_id_a,
     // the two connected components with the connection time. This is to quickly
     // change to a more efficient loop closure search (by constraining the
     // search window) when connected components are joined.
-    // 这两条轨迹之间的连接即将加入连接的组件.在这里, 我们使用连接时间更新两个连接组件的所有二分轨迹对
+    // 这两条轨迹之间的连接即将加入连接的组件.在这里,
+    // 我们使用连接时间更新两个连接组件的所有二分轨迹对
     // 这是为了在连接组件连接时快速更改为更有效的回环搜索（通过约束搜索窗口）.
-    
+
     // 获取所有与轨迹a连接的轨迹id
     std::vector<int> component_a =
         connected_components_.GetComponent(trajectory_id_a);

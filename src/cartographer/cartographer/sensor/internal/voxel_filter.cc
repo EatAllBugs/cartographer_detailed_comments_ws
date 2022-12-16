@@ -40,14 +40,16 @@ PointCloud FilterByMaxRange(const PointCloud& point_cloud,
 PointCloud AdaptivelyVoxelFiltered(
     const proto::AdaptiveVoxelFilterOptions& options,
     const PointCloud& point_cloud) {
-  // param: adaptive_voxel_filter.min_num_points 满足小于等于这个值的点云满足要求, 足够稀疏
+  // param: adaptive_voxel_filter.min_num_points
+  // 满足小于等于这个值的点云满足要求, 足够稀疏
   if (point_cloud.size() <= options.min_num_points()) {
     // 'point_cloud' is already sparse enough.
     return point_cloud;
   }
   // param: adaptive_voxel_filter.max_length 进行一次体素滤波
   PointCloud result = VoxelFilter(point_cloud, options.max_length());
-  // 如果按照最大边长进行体素滤波之后还超过这个数了, 就说明已经是这个参数下最稀疏的状态了, 直接返回
+  // 如果按照最大边长进行体素滤波之后还超过这个数了,
+  // 就说明已经是这个参数下最稀疏的状态了, 直接返回
   if (result.size() >= options.min_num_points()) {
     // Filtering with 'max_length' resulted in a sufficiently dense point cloud.
     return result;
@@ -62,7 +64,7 @@ PointCloud AdaptivelyVoxelFiltered(
     // 减小边长再次进行体素滤波
     float low_length = high_length / 2.f;
     result = VoxelFilter(point_cloud, low_length);
-    
+
     // 重复for循环直到 滤波后的点数多于min_num_points
     if (result.size() >= options.min_num_points()) {
       // Binary search to find the right amount of filtering. 'low_length' gave
@@ -76,7 +78,7 @@ PointCloud AdaptivelyVoxelFiltered(
         if (candidate.size() >= options.min_num_points()) {
           low_length = mid_length;
           result = candidate;
-        } 
+        }
         // 如果点数少, 就将边长变小, 让high_length变小
         else {
           high_length = mid_length;
@@ -107,7 +109,8 @@ std::vector<bool> RandomizedVoxelFilterIndices(
     PointFunction&& point_function) {
   // According to https://en.wikipedia.org/wiki/Reservoir_sampling
   std::minstd_rand0 generator;
-  // std::pair<int, int>的第一个元素保存该voxel内部的点的个数, 第二个元素保存该voxel中选择的那一个点的序号
+  // std::pair<int, int>的第一个元素保存该voxel内部的点的个数,
+  // 第二个元素保存该voxel中选择的那一个点的序号
   absl::flat_hash_map<VoxelKeyType, std::pair<int, int>>
       voxel_count_and_point_index;
   // 遍历所有的点, 计算
@@ -119,8 +122,7 @@ std::vector<bool> RandomizedVoxelFilterIndices(
     // 如果这个体素格子只有1个点, 那这个体素格子里的点的索引就是i
     if (voxel.first == 1) {
       voxel.second = i;
-    } 
-    else {
+    } else {
       // 生成随机数的范围是 [1, voxel.first]
       std::uniform_int_distribution<> distribution(1, voxel.first);
       // 生成的随机数与个数相等, 就让这个点代表这个体素格子
@@ -223,7 +225,8 @@ PointCloud AdaptiveVoxelFilter(
     const PointCloud& point_cloud,
     const proto::AdaptiveVoxelFilterOptions& options) {
   return AdaptivelyVoxelFiltered(
-      // param: adaptive_voxel_filter.max_range 距远离原点超过max_range的点被移除
+      // param: adaptive_voxel_filter.max_range
+      // 距远离原点超过max_range的点被移除
       // 这里的最大距离是相对于local坐标系原点的
       options, FilterByMaxRange(point_cloud, options.max_range()));
 }

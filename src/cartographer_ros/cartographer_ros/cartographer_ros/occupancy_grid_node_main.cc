@@ -167,13 +167,13 @@ void Node::HandleSubmapList(
     submap_slice.slice_pose = fetched_texture->slice_pose;
     submap_slice.resolution = fetched_texture->resolution;
     submap_slice.cairo_data.clear();
-    
+
     // Step: 2 生成surface, surface是指向Cairo画布的指针
     submap_slice.surface = ::cartographer::io::DrawTexture(
         fetched_texture->pixels.intensity, fetched_texture->pixels.alpha,
         fetched_texture->width, fetched_texture->height,
         &submap_slice.cairo_data);
-  } // end for
+  }  // end for
 
   // Delete all submaps that didn't appear in the message.
   // msg处理完之后, 还在 待删除 列表中的信息 就是后来不出现的, 可以删掉了
@@ -193,11 +193,11 @@ void Node::DrawAndPublish(const ::ros::WallTimerEvent& unused_timer_event) {
   }
   //  Step: 3 生成PaintSubmapSlicesResult, 绘制图像
   auto painted_slices = PaintSubmapSlices(submap_slices_, resolution_);
-  
+
   // Step: 4 由cartographer格式的地图生成ros格式的地图
   std::unique_ptr<nav_msgs::OccupancyGrid> msg_ptr = CreateOccupancyGridMsg(
       painted_slices, resolution_, last_frame_id_, last_timestamp_);
-  
+
   //  Step: 5 发布map topic
   occupancy_grid_publisher_.publish(*msg_ptr);
 }

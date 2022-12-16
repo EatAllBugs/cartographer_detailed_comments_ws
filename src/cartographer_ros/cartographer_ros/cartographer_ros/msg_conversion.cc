@@ -89,11 +89,11 @@ using ::cartographer_ros_msgs::LandmarkList;
 
 /**
  * @brief 点云格式的设置与数组的初始化
- * 
+ *
  * @param[in] timestamp 时间戳
  * @param[in] frame_id 坐标系
  * @param[in] num_points 点云的个数
- * @return sensor_msgs::PointCloud2 
+ * @return sensor_msgs::PointCloud2
  */
 sensor_msgs::PointCloud2 PreparePointCloud2Message(const int64_t timestamp,
                                                    const std::string& frame_id,
@@ -158,17 +158,16 @@ LaserScanToPointCloudWithIntensities(const LaserMessageType& msg) {
     // c++11: 使用auto可以适应不同的数据类型
     const auto& echoes = msg.ranges[i];
     if (HasEcho(echoes)) {
-
       const float first_echo = GetFirstEcho(echoes);
       // 满足范围才进行使用
       if (msg.range_min <= first_echo && first_echo <= msg.range_max) {
         const Eigen::AngleAxisf rotation(angle, Eigen::Vector3f::UnitZ());
         const cartographer::sensor::TimedRangefinderPoint point{
-            rotation * (first_echo * Eigen::Vector3f::UnitX()), // position
-            i * msg.time_increment};                            // time
+            rotation * (first_echo * Eigen::Vector3f::UnitX()),  // position
+            i * msg.time_increment};                             // time
         // 保存点云坐标与时间信息
         point_cloud.points.push_back(point);
-        
+
         // 如果存在强度信息
         if (msg.intensities.size() > 0) {
           CHECK_EQ(msg.intensities.size(), msg.ranges.size());
@@ -232,7 +231,8 @@ sensor_msgs::PointCloud2 ToPointCloud2Message(
     stream.next(point.position.x());
     stream.next(point.position.y());
     stream.next(point.position.z());
-    stream.next(kPointCloudComponentFourMagic); // kPointCloudComponentFourMagic = 1
+    stream.next(
+        kPointCloudComponentFourMagic);  // kPointCloudComponentFourMagic = 1
   }
   return msg;
 }
@@ -261,7 +261,6 @@ ToPointCloudWithIntensities(const sensor_msgs::PointCloud2& msg) {
 
   // 有强度数据
   if (PointCloud2HasField(msg, "intensity")) {
-
     // 有强度字段, 有时间字段
     if (PointCloud2HasField(msg, "time")) {
       pcl::PointCloud<PointXYZIT> pcl_point_cloud;
@@ -273,7 +272,7 @@ ToPointCloudWithIntensities(const sensor_msgs::PointCloud2& msg) {
             {Eigen::Vector3f{point.x, point.y, point.z}, point.time});
         point_cloud.intensities.push_back(point.intensity);
       }
-    } 
+    }
     // 有强度字段, 没时间字段
     else {
       pcl::PointCloud<pcl::PointXYZI> pcl_point_cloud;
@@ -282,11 +281,12 @@ ToPointCloudWithIntensities(const sensor_msgs::PointCloud2& msg) {
       point_cloud.intensities.reserve(pcl_point_cloud.size());
       for (const auto& point : pcl_point_cloud) {
         point_cloud.points.push_back(
-            {Eigen::Vector3f{point.x, point.y, point.z}, 0.f}); // 没有时间信息就把时间填0
+            {Eigen::Vector3f{point.x, point.y, point.z},
+             0.f});  // 没有时间信息就把时间填0
         point_cloud.intensities.push_back(point.intensity);
       }
     }
-  } 
+  }
   // 没有强度数据
   else {
     // If we don't have an intensity field, just copy XYZ and fill in 1.0f.
@@ -301,7 +301,7 @@ ToPointCloudWithIntensities(const sensor_msgs::PointCloud2& msg) {
             {Eigen::Vector3f{point.x, point.y, point.z}, point.time});
         point_cloud.intensities.push_back(1.0f);
       }
-    } 
+    }
     // 没强度字段, 没时间字段
     else {
       pcl::PointCloud<pcl::PointXYZ> pcl_point_cloud;
@@ -310,7 +310,8 @@ ToPointCloudWithIntensities(const sensor_msgs::PointCloud2& msg) {
       point_cloud.intensities.reserve(pcl_point_cloud.size());
       for (const auto& point : pcl_point_cloud) {
         point_cloud.points.push_back(
-            {Eigen::Vector3f{point.x, point.y, point.z}, 0.f}); // 没有时间信息就把时间填0
+            {Eigen::Vector3f{point.x, point.y, point.z},
+             0.f});  // 没有时间信息就把时间填0
         point_cloud.intensities.push_back(1.0f);
       }
     }
@@ -382,7 +383,7 @@ geometry_msgs::Transform ToGeometryMsgTransform(const Rigid3d& rigid3d) {
 
 /**
  * @brief 将cartographer的Rigid3d位姿格式,转换成ROS的 geometry_msgs::Pose 格式
- * 
+ *
  * @param[in] rigid3d Rigid3d格式的位姿
  * @return geometry_msgs::Pose ROS格式的位姿
  */
@@ -407,12 +408,12 @@ geometry_msgs::Point ToGeometryMsgPoint(const Eigen::Vector3d& vector3d) {
 // 将经纬度数据转换成ecef坐标系下的坐标
 Eigen::Vector3d LatLongAltToEcef(const double latitude, const double longitude,
                                  const double altitude) {
-  // note: 地固坐标系(Earth-Fixed Coordinate System)也称地球坐标系, 
+  // note: 地固坐标系(Earth-Fixed Coordinate System)也称地球坐标系,
   // 是固定在地球上与地球一起旋转的坐标系.
   // 如果忽略地球潮汐和板块运动, 地面上点的坐标值在地固坐标系中是固定不变的.
 
   // https://en.wikipedia.org/wiki/Geographic_coordinate_conversion#From_geodetic_to_ECEF_coordinates
-  
+
   constexpr double a = 6378137.;  // semi-major axis, equator to center.
   constexpr double f = 1. / 298.257223563;
   constexpr double b = a * (1. - f);  // semi-minor axis, pole to center.
@@ -432,12 +433,14 @@ Eigen::Vector3d LatLongAltToEcef(const double latitude, const double longitude,
 }
 
 /**
- * @brief 计算第一帧GPS数据指向ECEF坐标系下原点的坐标变换, 用这个坐标变换乘以之后的GPS数据
+ * @brief 计算第一帧GPS数据指向ECEF坐标系下原点的坐标变换,
+ * 用这个坐标变换乘以之后的GPS数据
  * 就得到了之后的GPS数据相对于第一帧GPS数据的相对坐标变换
- * 
+ *
  * @param[in] latitude 维度数据
  * @param[in] longitude 经度数据
- * @return cartographer::transform::Rigid3d 计算第一帧GPS数据指向ECEF坐标系下原点的坐标变换
+ * @return cartographer::transform::Rigid3d
+ * 计算第一帧GPS数据指向ECEF坐标系下原点的坐标变换
  */
 cartographer::transform::Rigid3d ComputeLocalFrameFromLatLong(
     const double latitude, const double longitude) {
@@ -452,8 +455,8 @@ cartographer::transform::Rigid3d ComputeLocalFrameFromLatLong(
 
 /**
  * @brief 由cairo的图像生成ros格式的地图
- * 
- * @param[in] painted_slices 
+ *
+ * @param[in] painted_slices
  * @param[in] resolution 栅格地图的分辨率
  * @param[in] frame_id 栅格地图的坐标系
  * @param[in] time 地图对应的时间
@@ -488,12 +491,12 @@ std::unique_ptr<nav_msgs::OccupancyGrid> CreateOccupancyGridMsg(
   // 获取 uint32_t* 格式的地图数据
   const uint32_t* pixel_data = reinterpret_cast<uint32_t*>(
       cairo_image_surface_get_data(painted_slices.surface.get()));
-      
+
   occupancy_grid->data.reserve(width * height);
   for (int y = height - 1; y >= 0; --y) {
     for (int x = 0; x < width; ++x) {
       const uint32_t packed = pixel_data[y * width + x];
-      
+
       // 根据packed获取像素值[0-255]
       const unsigned char color = packed >> 16;
       // 根据packed获取这个栅格是否被更新过
@@ -501,10 +504,8 @@ std::unique_ptr<nav_msgs::OccupancyGrid> CreateOccupancyGridMsg(
 
       // source code
       // 根据像素值确定栅格占用值
-      const int value =
-          observed == 0
-              ? -1
-              : ::cartographer::common::RoundToInt((1. - color / 255.) * 100.);
+      const int value = observed == 0 ? -1 : ::cartographer::common::RoundToInt(
+                                                 (1. - color / 255.) * 100.);
 
       /* note: 生成ROS兼容的栅格地图
       * 像素值65-100的设置占用值为100,表示占用,代表障碍物
@@ -515,7 +516,8 @@ std::unique_ptr<nav_msgs::OccupancyGrid> CreateOccupancyGridMsg(
       int value = -1;
       if (observed != 0)
       {
-        int value_temp = ::cartographer::common::RoundToInt((1. - color / 255.) * 100.);
+        int value_temp = ::cartographer::common::RoundToInt((1. - color / 255.)
+      * 100.);
         if (value_temp > 100 * 0.65)
             value_temp = 100;
         else if (value_temp < 100 * 0.196)

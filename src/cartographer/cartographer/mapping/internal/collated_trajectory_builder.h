@@ -36,7 +36,7 @@ namespace mapping {
 
 // Collates sensor data using a sensor::CollatorInterface, then passes it on to
 // a mapping::TrajectoryBuilderInterface which is common for 2D and 3D.
-// 使用 sensor::CollatorInterface 整理传感器数据, 
+// 使用 sensor::CollatorInterface 整理传感器数据,
 // 然后将其传递到2D和3D通用的 mapping::TrajectoryBuilderInterface
 
 // 处理传感器数据, 使其按照时间排列, 然后传入GlobalTrajectoryBuilder

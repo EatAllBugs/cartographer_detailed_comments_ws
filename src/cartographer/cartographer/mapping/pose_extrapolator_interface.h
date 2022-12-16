@@ -36,7 +36,7 @@ proto::PoseExtrapolatorOptions CreatePoseExtrapolatorOptions(
 class PoseExtrapolatorInterface {
  public:
   /**
-   * @brief 
+   * @brief
    * 包含 请求时间内索引为0到N-1的位姿, 请求时间内索引N处的位姿
    * 当前线速度与当前重力方向
    */

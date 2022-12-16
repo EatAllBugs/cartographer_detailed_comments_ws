@@ -98,7 +98,7 @@ class TSDValueConverter {
   // value到tsd的转换表 将[0, 1~32767] 映射到 [-0.3, -0.3~0.3]
   const std::vector<float>* value_to_tsd_;
   // value到weight的转换表 将[0, 1~32767] 映射到 [0.0, 0.0~10.0]
-  const std::vector<float>* value_to_weight_; 
+  const std::vector<float>* value_to_weight_;
 };
 
 }  // namespace mapping

@@ -127,7 +127,7 @@ RealTimeCorrelativeScanMatcher2D::GenerateExhaustiveSearchCandidates(
 
 /**
  * @brief 相关性扫描匹配 - 计算量很大
- * 
+ *
  * @param[in] initial_pose_estimate 预测出来的先验位姿
  * @param[in] point_cloud 用于匹配的点云 点云的原点位于local坐标系原点
  * @param[in] grid 用于匹配的栅格地图
@@ -155,24 +155,25 @@ double RealTimeCorrelativeScanMatcher2D::Match(
   // Step: 2 生成按照不同角度旋转后的点云集合
   const std::vector<sensor::PointCloud> rotated_scans =
       GenerateRotatedScans(rotated_point_cloud, search_parameters);
-  
-  // Step: 3 将旋转后的点云集合按照预测出的平移量进行平移, 获取平移后的点在地图中的索引
+
+  // Step: 3 将旋转后的点云集合按照预测出的平移量进行平移,
+  // 获取平移后的点在地图中的索引
   const std::vector<DiscreteScan2D> discrete_scans = DiscretizeScans(
       grid.limits(), rotated_scans,
       Eigen::Translation2f(initial_pose_estimate.translation().x(),
                            initial_pose_estimate.translation().y()));
-  
+
   // Step: 4 生成所有的候选解
   std::vector<Candidate2D> candidates =
       GenerateExhaustiveSearchCandidates(search_parameters);
-  
+
   // Step: 5 计算所有候选解的加权得分
   ScoreCandidates(grid, discrete_scans, search_parameters, &candidates);
 
   // Step: 6 获取最优解
   const Candidate2D& best_candidate =
       *std::max_element(candidates.begin(), candidates.end());
-  
+
   // Step: 7 将计算出的偏差量加上原始位姿获得校正后的位姿
   *pose_estimate = transform::Rigid2d(
       {initial_pose_estimate.translation().x() + best_candidate.x,

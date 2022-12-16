@@ -26,7 +26,7 @@ namespace mapping {
 
 /**
  * @brief ProbabilityGrid的构造函数
- * 
+ *
  * @param[in] limits 地图坐标信息
  * @param[in] conversion_tables 转换表
  */
@@ -62,8 +62,10 @@ void ProbabilityGrid::SetProbability(const Eigen::Array2i& cell_index,
 // to the probability of the cell at 'cell_index' if the cell has not already
 // been updated. Multiple updates of the same cell will be ignored until
 // FinishUpdate() is called. Returns true if the cell was updated.
-// 如果单元格尚未更新,则将调用 ComputeLookupTableToApplyOdds() 时指定的 'odds' 应用于单元格在 'cell_index' 处的概率
-// 在调用 FinishUpdate() 之前，将忽略同一单元格的多次更新。如果单元格已更新，则返回 true
+// 如果单元格尚未更新,则将调用 ComputeLookupTableToApplyOdds() 时指定的 'odds'
+// 应用于单元格在 'cell_index' 处的概率
+// 在调用 FinishUpdate()
+// 之前，将忽略同一单元格的多次更新。如果单元格已更新，则返回 true
 //
 // If this is the first call to ApplyOdds() for the specified cell, its value
 // will be set to probability corresponding to 'odds'.
@@ -157,10 +159,12 @@ bool ProbabilityGrid::DrawToSubmapTexture(
     // is currently white, so walls will look too gray. This should be hard to
     // detect visually for the user, though.
     // 我们想添加 'delta'，但使用值和 alpha 是不可能的
-    // 我们使用预乘 alpha，因此当 'delta' 为正时，我们可以通过将 'alpha' 设置为零来添加它。 
-    // 如果它是负数，我们将 'value' 设置为零，并使用 'alpha' 进行减法。 这仅在像素当前为白色时才正确，因此墙壁看起来太灰。 
+    // 我们使用预乘 alpha，因此当 'delta' 为正时，我们可以通过将 'alpha'
+    // 设置为零来添加它。
+    // 如果它是负数，我们将 'value' 设置为零，并使用 'alpha' 进行减法。
+    // 这仅在像素当前为白色时才正确，因此墙壁看起来太灰。
     // 但是，这对于用户来说应该很难在视觉上检测到。
-    
+
     // delta处于[-127, 127]
     const int delta =
         128 - ProbabilityToLogOddsInteger(GetProbability(xy_index + offset));
@@ -173,7 +177,7 @@ bool ProbabilityGrid::DrawToSubmapTexture(
 
   // 保存地图栅格数据时进行压缩
   common::FastGzipString(cells, texture->mutable_cells());
-  
+
   // 填充地图描述信息
   texture->set_width(cell_limits.num_x_cells);
   texture->set_height(cell_limits.num_y_cells);

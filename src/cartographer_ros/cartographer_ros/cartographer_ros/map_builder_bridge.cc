@@ -60,7 +60,8 @@ visualization_msgs::Marker CreateTrajectoryMarker(const int trajectory_id,
   return marker;
 }
 
-// 获取landmark的index,如果在unordered_map找到就返回index, 如果找不到就以map的个数新建个index
+// 获取landmark的index,如果在unordered_map找到就返回index,
+// 如果找不到就以map的个数新建个index
 int GetLandmarkIndex(
     const std::string& landmark_id,
     std::unordered_map<std::string, int>* landmark_id_to_index) {
@@ -102,8 +103,9 @@ void PushAndResetLineMarker(visualization_msgs::Marker* marker,
 }  // namespace
 
 /**
- * @brief 根据传入的node_options, MapBuilder, 以及tf_buffer 完成三个本地变量的初始化
- * 
+ * @brief 根据传入的node_options, MapBuilder, 以及tf_buffer
+ * 完成三个本地变量的初始化
+ *
  * @param[in] node_options 参数配置
  * @param[in] map_builder 在node_main.cc中传入的MapBuilder
  * @param[in] tf_buffer tf_buffer
@@ -143,8 +145,7 @@ int MapBuilderBridge::AddTrajectory(
   const int trajectory_id = map_builder_->AddTrajectoryBuilder(
       expected_sensor_ids, trajectory_options.trajectory_builder_options,
       // lambda表达式 local_slam_result_callback_
-      [this](const int trajectory_id, 
-             const ::cartographer::common::Time time,
+      [this](const int trajectory_id, const ::cartographer::common::Time time,
              const Rigid3d local_pose,
              ::cartographer::sensor::RangeData range_data_in_local,
              const std::unique_ptr<
@@ -161,10 +162,10 @@ int MapBuilderBridge::AddTrajectory(
   sensor_bridges_[trajectory_id] = absl::make_unique<SensorBridge>(
       trajectory_options.num_subdivisions_per_laser_scan,
       trajectory_options.tracking_frame,
-      node_options_.lookup_transform_timeout_sec, 
-      tf_buffer_,
-      map_builder_->GetTrajectoryBuilder(trajectory_id)); // CollatedTrajectoryBuilder
-  
+      node_options_.lookup_transform_timeout_sec, tf_buffer_,
+      map_builder_->GetTrajectoryBuilder(
+          trajectory_id));  // CollatedTrajectoryBuilder
+
   // Step: 3 保存轨迹的参数配置
   auto emplace_result =
       trajectory_options_.emplace(trajectory_id, trajectory_options);
@@ -197,7 +198,7 @@ bool MapBuilderBridge::SerializeState(const std::string& filename,
 
 /**
  * @brief 获取对应id轨迹的 索引为 submap_index 的地图的栅格值及其他信息
- * 
+ *
  * @param[in] request 轨迹id与submap的index
  * @param[in] response 是否成功
  */
@@ -243,7 +244,8 @@ MapBuilderBridge::GetTrajectoryStates() {
   auto trajectory_states = map_builder_->pose_graph()->GetTrajectoryStates();
   // Add active trajectories that are not yet in the pose graph, but are e.g.
   // waiting for input sensor data and thus already have a sensor bridge.
-  // 为活跃的轨迹添加active状态, 如果trajectory_states中存在这个轨迹id,则会被忽略不会被添加进去
+  // 为活跃的轨迹添加active状态,
+  // 如果trajectory_states中存在这个轨迹id,则会被忽略不会被添加进去
   for (const auto& sensor_bridge : sensor_bridges_) {
     trajectory_states.insert(std::make_pair(
         sensor_bridge.first,
@@ -306,7 +308,7 @@ MapBuilderBridge::GetLocalTrajectoryData() {
             trajectory_options_[trajectory_id].published_frame),
 
         trajectory_options_[trajectory_id]};
-  } // end for
+  }  // end for
   return local_trajectory_data;
 }
 
@@ -366,7 +368,6 @@ visualization_msgs::MarkerArray MapBuilderBridge::GetTrajectoryNodeList() {
     // 是外部子图关系才往下走
     if (constraint.tag ==
         cartographer::mapping::PoseGraphInterface::Constraint::INTER_SUBMAP) {
-      
       // 找到当前时刻 同一轨迹下的最后一个inter_submap约束的node_index
       if (constraint.node_id.trajectory_id ==
           constraint.submap_id.trajectory_id) {
@@ -375,7 +376,7 @@ visualization_msgs::MarkerArray MapBuilderBridge::GetTrajectoryNodeList() {
             std::max(trajectory_to_last_inter_submap_constrained_node.at(
                          constraint.node_id.trajectory_id),
                      constraint.node_id.node_index);
-      } 
+      }
       // 不同轨迹下的最后一个inter_submap的node_index
       else {
         trajectory_to_last_inter_trajectory_constrained_node
@@ -399,7 +400,7 @@ visualization_msgs::MarkerArray MapBuilderBridge::GetTrajectoryNodeList() {
     int last_inter_trajectory_constrained_node = std::max(
         node_poses.trajectory(trajectory_id).begin()->id.node_index,
         trajectory_to_last_inter_trajectory_constrained_node.at(trajectory_id));
-    
+
     // 节点索引的最大值
     last_inter_submap_constrained_node =
         std::max(last_inter_submap_constrained_node,
@@ -414,7 +415,7 @@ visualization_msgs::MarkerArray MapBuilderBridge::GetTrajectoryNodeList() {
     }
 
     marker.color.a = 1.0;
-    
+
     // 遍历所有节点
     for (const auto& node_id_data : node_poses.trajectory(trajectory_id)) {
       // 如果没有位姿数据就先跳过
@@ -450,17 +451,17 @@ visualization_msgs::MarkerArray MapBuilderBridge::GetTrajectoryNodeList() {
         // Push back the last point, so the two markers appear connected.
         marker.points.push_back(node_point);
       }
-    } // end for
-    
+    }  // end for
+
     // 将剩余marker放入trajectory_node_list.markers中
     PushAndResetLineMarker(&marker, &trajectory_node_list.markers);
-    
+
     size_t current_last_marker_id = static_cast<size_t>(marker.id - 1);
-    // 如果该轨迹id不在trajectory_to_highest_marker_id_中, 将current_last_marker_id保存
+    // 如果该轨迹id不在trajectory_to_highest_marker_id_中,
+    // 将current_last_marker_id保存
     if (trajectory_to_highest_marker_id_.count(trajectory_id) == 0) {
       trajectory_to_highest_marker_id_[trajectory_id] = current_last_marker_id;
-    } 
-    else {
+    } else {
       marker.action = visualization_msgs::Marker::DELETE;
       while (static_cast<size_t>(marker.id) <=
              trajectory_to_highest_marker_id_[trajectory_id]) {
@@ -471,7 +472,7 @@ visualization_msgs::MarkerArray MapBuilderBridge::GetTrajectoryNodeList() {
       trajectory_to_highest_marker_id_[trajectory_id] = current_last_marker_id;
     }
 
-  } // end for
+  }  // end for
   return trajectory_node_list;
 }
 
@@ -491,7 +492,7 @@ visualization_msgs::MarkerArray MapBuilderBridge::GetLandmarkPosesList() {
 
 /**
  * @brief 获取位姿图中所有的约束,分成6种类型,放入不同类型的marker中
- * 
+ *
  * @return visualization_msgs::MarkerArray 返回6种marker的集合
  */
 visualization_msgs::MarkerArray MapBuilderBridge::GetConstraintList() {
@@ -573,14 +574,14 @@ visualization_msgs::MarkerArray MapBuilderBridge::GetConstraintList() {
       // Color mapping for submaps of various trajectories - add trajectory id
       // to ensure different starting colors. Also add a fixed offset of 25
       // to avoid having identical colors as trajectories.
-      // 各种轨迹的子图的颜色映射-添加轨迹ID以确保不同的起始颜色 还要添加25的固定偏移量, 以避免与轨迹具有相同的颜色. 
+      // 各种轨迹的子图的颜色映射-添加轨迹ID以确保不同的起始颜色
+      // 还要添加25的固定偏移量, 以避免与轨迹具有相同的颜色.
       color_constraint = ToMessage(
           cartographer::io::GetColor(constraint.submap_id.submap_index +
                                      constraint.submap_id.trajectory_id + 25));
       color_residual.a = 1.0;
       color_residual.r = 1.0;
-    } 
-    else {
+    } else {
       // 相同轨迹内,子图外部约束, 对应第三种与第四种marker
       if (constraint.node_id.trajectory_id ==
           constraint.submap_id.trajectory_id) {
@@ -589,7 +590,7 @@ visualization_msgs::MarkerArray MapBuilderBridge::GetConstraintList() {
         // Bright yellow 亮黄色
         color_constraint.a = 1.0;
         color_constraint.r = color_constraint.g = 1.0;
-      } 
+      }
       // 不同轨迹间的constraint,对应第五种与第六种marker
       else {
         constraint_marker = &constraint_inter_diff_trajectory_marker;
@@ -640,7 +641,7 @@ visualization_msgs::MarkerArray MapBuilderBridge::GetConstraintList() {
         ToGeometryMsgPoint(constraint_pose.translation()));
     residual_marker->points.push_back(
         ToGeometryMsgPoint(trajectory_node_pose.translation()));
-  } // end for
+  }  // end for
 
   // 将填充完数据的Marker放到MarkerArray中
   constraint_list.markers.push_back(constraint_intra_marker);
@@ -659,7 +660,7 @@ SensorBridge* MapBuilderBridge::sensor_bridge(const int trajectory_id) {
 
 /**
  * @brief 保存local slam 的结果
- * 
+ *
  * @param[in] trajectory_id 当前轨迹id
  * @param[in] time 扫描匹配的时间
  * @param[in] local_pose 扫描匹配计算出的在local坐标系下的位姿
@@ -679,10 +680,11 @@ void MapBuilderBridge::OnLocalSlamResult(
 }
 
 // lx add 获取节点位姿与雷达数据
-std::shared_ptr<MapById<NodeId, TrajectoryNode>> MapBuilderBridge::GetTrajectoryNodes() {
+std::shared_ptr<MapById<NodeId, TrajectoryNode>>
+MapBuilderBridge::GetTrajectoryNodes() {
   std::shared_ptr<MapById<NodeId, TrajectoryNode>> trajectory_nodes =
       std::make_shared<MapById<NodeId, TrajectoryNode>>(
-        map_builder_->pose_graph()->GetTrajectoryNodes());
+          map_builder_->pose_graph()->GetTrajectoryNodes());
   return trajectory_nodes;
 }
 

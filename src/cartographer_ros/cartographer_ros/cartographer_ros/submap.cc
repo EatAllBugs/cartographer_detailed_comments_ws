@@ -27,10 +27,10 @@ namespace cartographer_ros {
 
 /**
  * @brief 获取SubmapTextures
- * 
+ *
  * @param[in] submap_id submap的id
  * @param[in] client SubmapQuery服务的客户端
- * @return std::unique_ptr<::cartographer::io::SubmapTextures> 
+ * @return std::unique_ptr<::cartographer::io::SubmapTextures>
  */
 std::unique_ptr<::cartographer::io::SubmapTextures> FetchSubmapTextures(
     const ::cartographer::mapping::SubmapId& submap_id,
@@ -38,7 +38,7 @@ std::unique_ptr<::cartographer::io::SubmapTextures> FetchSubmapTextures(
   ::cartographer_ros_msgs::SubmapQuery srv;
   srv.request.trajectory_id = submap_id.trajectory_id;
   srv.request.submap_index = submap_id.submap_index;
-  
+
   // Step: 1 调用SubmapQuery服务
   if (!client->call(srv) ||
       srv.response.status.code != ::cartographer_ros_msgs::StatusCode::OK) {

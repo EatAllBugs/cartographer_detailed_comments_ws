@@ -53,7 +53,6 @@ void ConnectedComponents::Union(const int trajectory_id_a,
   forest_[representative_a] = representative_b;
 }
 
-
 // 找到这条轨迹连接链的尽头, (b, b)是尽头
 int ConnectedComponents::FindSet(const int trajectory_id) {
   auto it = forest_.find(trajectory_id);

@@ -33,12 +33,12 @@ RealTimeCorrelativeScanMatcher3D::RealTimeCorrelativeScanMatcher3D(
 
 /**
  * @brief 通过暴力搜索方法对先验位姿进行校准
- * 
+ *
  * @param[in] initial_pose_estimate 先验位姿
  * @param[in] point_cloud 高分辨率点云
  * @param[in] hybrid_grid 高分辨率地图
  * @param[out] pose_estimate 校准后的位姿
- * @return float 
+ * @return float
  */
 float RealTimeCorrelativeScanMatcher3D::Match(
     const transform::Rigid3d& initial_pose_estimate,
@@ -84,8 +84,9 @@ RealTimeCorrelativeScanMatcher3D::GenerateExhaustiveSearchTransforms(
   const float kSafetyMargin = 1.f - 1e-3f;
   // 角度搜索步长
   const float angular_step_size =
-      kSafetyMargin * std::acos(1.f - common::Pow2(resolution) /
-                                          (2.f * common::Pow2(max_scan_range)));
+      kSafetyMargin * std::acos(1.f -
+                                common::Pow2(resolution) /
+                                    (2.f * common::Pow2(max_scan_range)));
   // 角度搜索范围
   const int angular_window_size =
       common::RoundToInt(options_.angular_search_window() / angular_step_size);

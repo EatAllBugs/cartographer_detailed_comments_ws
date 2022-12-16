@@ -38,9 +38,9 @@
 
 namespace cartographer {
 namespace mapping {
-  
+
 // c++11: 匿名命名空间, 作用域被限制在本文件内
-namespace { 
+namespace {
 
 using mapping::proto::SerializedData;
 
@@ -79,12 +79,15 @@ void MaybeAddPureLocalizationTrimmer(
 }  // namespace
 
 /**
- * @brief 保存配置参数, 根据给定的参数初始化线程池, 并且初始化pose_graph_与sensor_collator_
- * 
+ * @brief 保存配置参数, 根据给定的参数初始化线程池,
+ * 并且初始化pose_graph_与sensor_collator_
+ *
  * @param[in] options proto::MapBuilderOptions格式的 map_builder参数
  */
 MapBuilder::MapBuilder(const proto::MapBuilderOptions& options)
-    : options_(options), thread_pool_(options.num_background_threads()) { // param: num_background_threads
+    : options_(options),
+      thread_pool_(
+          options.num_background_threads()) {  // param: num_background_threads
   CHECK(options.use_trajectory_builder_2d() ^
         options.use_trajectory_builder_3d());
 
@@ -103,7 +106,7 @@ MapBuilder::MapBuilder(const proto::MapBuilderOptions& options)
         absl::make_unique<optimization::OptimizationProblem3D>(
             options_.pose_graph_options().optimization_problem_options()),
         &thread_pool_);
-  } 
+  }
 
   // 在 cartographer/configuration_files/map_builder.lua 中设置
   // param: MAP_BUILDER.collate_by_trajectory 默认为false
@@ -117,7 +120,7 @@ MapBuilder::MapBuilder(const proto::MapBuilderOptions& options)
 
 /**
  * @brief 创建一个新的 TrajectoryBuilder 并返回它的 trajectory_id
- * 
+ *
  * @param[in] expected_sensor_ids 所有需要的topic的名字的集合
  * @param[in] trajectory_options 轨迹的参数配置
  * @param[in] local_slam_result_callback 需要传入的回调函数
@@ -128,7 +131,6 @@ int MapBuilder::AddTrajectoryBuilder(
     const std::set<SensorId>& expected_sensor_ids,
     const proto::TrajectoryBuilderOptions& trajectory_options,
     LocalSlamResultCallback local_slam_result_callback) {
-
   // id是从零开始的, 所以新trajectory_id就是trajectory_builders_的size()
   const int trajectory_id = trajectory_builders_.size();
 
@@ -136,7 +138,8 @@ int MapBuilder::AddTrajectoryBuilder(
   // 配置文件中没有 pose_graph_odometry_motion_filte
   absl::optional<MotionFilter> pose_graph_odometry_motion_filter;
 
-  // LOG(INFO) << "pose_graph odometry_motion_filter is " << trajectory_options.has_pose_graph_odometry_motion_filter();
+  // LOG(INFO) << "pose_graph odometry_motion_filter is " <<
+  // trajectory_options.has_pose_graph_odometry_motion_filter();
   // 上面会打印出0, 所以没有使用后端的里程计的motion_filter
 
   if (trajectory_options.has_pose_graph_odometry_motion_filter()) {
@@ -145,7 +148,7 @@ int MapBuilder::AddTrajectoryBuilder(
         MotionFilter(trajectory_options.pose_graph_odometry_motion_filter()));
   }
 
-  // LocalTrajectoryBuilder 就是前端, 不带 Loop Closure 
+  // LocalTrajectoryBuilder 就是前端, 不带 Loop Closure
   // 包含了 Pose Extrapolator, Scan Matching, 生成submap 等
 
   // 3d的轨迹
@@ -156,22 +159,27 @@ int MapBuilder::AddTrajectoryBuilder(
       local_trajectory_builder = absl::make_unique<LocalTrajectoryBuilder3D>(
           trajectory_options.trajectory_builder_3d_options(),
           SelectRangeSensorIds(expected_sensor_ids));
-    } 
+    }
 
     /**
-     * c++11: static_cast关键字（编译时类型检查）: static_cast < type-id > ( expression )
-     * 该运算符把expression转换为type-id类型, 但没有运行时类型检查来保证转换的安全性
-      （1）用于基本数据类型之间的转换, 如把int转换为char, 把int转换成enum, 
+     * c++11: static_cast关键字（编译时类型检查）: static_cast < type-id > (
+     expression )
+     * 该运算符把expression转换为type-id类型,
+     但没有运行时类型检查来保证转换的安全性
+      （1）用于基本数据类型之间的转换, 如把int转换为char, 把int转换成enum,
       （2）把空指针转换成目标类型的空指针
       （3）把任何类型的表达式类型转换成void类型
       （4）用于类层次结构中父类和子类之间指针和引用的转换.
 
-     * c++11: dynamic_cast关键字（运行时类型检查）: dynamic_cast < type-id > ( expression )
-        该运算符把 expression 转换成 type-id 类型的对象. Type-id必须是类的指针、类的引用或者void *
+     * c++11: dynamic_cast关键字（运行时类型检查）: dynamic_cast < type-id > (
+     expression )
+        该运算符把 expression 转换成 type-id 类型的对象.
+     Type-id必须是类的指针、类的引用或者void *
         如果type-id是类指针类型, 那么expression也必须是一个指针
         如果type-id是一个引用, 那么expression也必须是一个引用
 
-        dynamic_cast主要用于类层次间的上行转换（子类到父类）和下行转换（父类到子类）, 还可以用于类之间的交叉转换.
+        dynamic_cast主要用于类层次间的上行转换（子类到父类）和下行转换（父类到子类）,
+     还可以用于类之间的交叉转换.
         在类层次间进行上行转换时, dynamic_cast和static_cast的效果是一样的；
         在进行下行转换时, dynamic_cast具有类型检查的功能, 比static_cast更安全.
      */
@@ -185,7 +193,7 @@ int MapBuilder::AddTrajectoryBuilder(
             std::move(local_trajectory_builder), trajectory_id,
             static_cast<PoseGraph3D*>(pose_graph_.get()),
             local_slam_result_callback, pose_graph_odometry_motion_filter)));
-  } 
+  }
   // 2d的轨迹
   else {
     std::unique_ptr<LocalTrajectoryBuilder2D> local_trajectory_builder;
@@ -217,7 +225,7 @@ int MapBuilder::AddTrajectoryBuilder(
   if (trajectory_options.has_initial_trajectory_pose()) {
     const auto& initial_trajectory_pose =
         trajectory_options.initial_trajectory_pose();
-    
+
     // 在位姿图中设置初始位姿
     pose_graph_->SetInitialTrajectoryPose(
         trajectory_id, initial_trajectory_pose.to_trajectory_id(),
@@ -233,7 +241,7 @@ int MapBuilder::AddTrajectoryBuilder(
   *options_with_sensor_ids_proto.mutable_trajectory_builder_options() =
       trajectory_options;
   all_trajectory_builder_options_.push_back(options_with_sensor_ids_proto);
-  
+
   CHECK_EQ(trajectory_builders_.size(), all_trajectory_builder_options_.size());
   return trajectory_id;
 }
@@ -244,7 +252,8 @@ int MapBuilder::AddTrajectoryForDeserialization(
         options_with_sensor_ids_proto) {
   const int trajectory_id = trajectory_builders_.size();
 
-  // c++11: vector::emplace_back() 在原地构造, 直接传入vector, 不调用移动构造函数
+  // c++11: vector::emplace_back() 在原地构造, 直接传入vector,
+  // 不调用移动构造函数
 
   trajectory_builders_.emplace_back();
   all_trajectory_builder_options_.push_back(options_with_sensor_ids_proto);
@@ -482,8 +491,7 @@ std::map<int, int> MapBuilder::LoadState(
           SubmapId{constraint_proto.submap_id().trajectory_id(),
                    constraint_proto.submap_id().submap_index()});
     }
-  } 
-  else {
+  } else {
     // When loading unfrozen trajectories, 'AddSerializedConstraints' will
     // take care of adding information about which nodes belong to which
     // submap.

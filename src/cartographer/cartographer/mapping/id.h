@@ -38,8 +38,10 @@ namespace mapping {
 namespace internal {
 
 // c++11: decltype 可以从一个变量或表达式中得到类型
-// 在 C++11 中, auto可以和decltype一起用, 将auto放置在返回值类型上当做占位符, 不表达实际意思
-// 在参数列表后添加 -> decltype( ), 这是后置返回类型, 代表返回的类型是 () 中的类型
+// 在 C++11 中, auto可以和decltype一起用, 将auto放置在返回值类型上当做占位符,
+// 不表达实际意思
+// 在参数列表后添加 -> decltype( ), 这是后置返回类型, 代表返回的类型是 ()
+// 中的类型
 // 在 C++14 中, 则可以不用 decltype
 
 template <class T>
@@ -159,11 +161,14 @@ class MapById {
    public:
     // c++11: std::bidirectional_iterator_tag 用于将迭代器的类别标识为双向迭代器
     // 一个满足 STL 要求的迭代器类必须全部定义这些别名
-    using iterator_category = std::bidirectional_iterator_tag;  // 迭代器类别的标签类类型
-    using value_type = IdDataReference;       // 迭代器所指向值的类型
-    using difference_type = int64;            // 两个迭代器之间差别值的类型
-    using pointer = std::unique_ptr<const IdDataReference>;     // 迭代器所表示的指针类型
-    using reference = const IdDataReference&; // 来自于 *ConstIterator 的引用类型
+    using iterator_category =
+        std::bidirectional_iterator_tag;  // 迭代器类别的标签类类型
+    using value_type = IdDataReference;   // 迭代器所指向值的类型
+    using difference_type = int64;  // 两个迭代器之间差别值的类型
+    using pointer =
+        std::unique_ptr<const IdDataReference>;  // 迭代器所表示的指针类型
+    using reference =
+        const IdDataReference&;  // 来自于 *ConstIterator 的引用类型
 
     // 构造函数 通过MapById和轨迹id生成指向轨迹第一个数据的迭代器
     explicit ConstIterator(const MapById& map_by_id, const int trajectory_id)
@@ -248,7 +253,8 @@ class MapById {
     typename std::map<int, MapByIndex>::const_iterator current_trajectory_;
     // 轨迹结束的标志 map_by_id.trajectories_.end()
     typename std::map<int, MapByIndex>::const_iterator end_trajectory_;
-    // map_by_id.trajectories_[i].MapByIndex.data_.begin() int是数据的索引, DataType是数据
+    // map_by_id.trajectories_[i].MapByIndex.data_.begin() int是数据的索引,
+    // DataType是数据
     typename std::map<int, DataType>::const_iterator current_data_;
   };
 
@@ -457,7 +463,6 @@ class MapById {
   }
 
  private:
- 
   struct MapByIndex {
     bool can_append_ = true;
     // 这里的int指的是 NodeId或者SubmapId的index, DataType为实际存储的数据

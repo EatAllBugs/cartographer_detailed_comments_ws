@@ -27,7 +27,7 @@ namespace mapping {
 
 /**
  * @brief 构造函数
- * 
+ *
  * @param[in] pose_queue_duration 时间差 0.001s
  * @param[in] imu_gravity_time_constant 10
  */
@@ -93,7 +93,7 @@ void PoseExtrapolator::AddPose(const common::Time time,
   timed_pose_queue_.push_back(TimedPose{time, pose});
 
   // 保持pose队列中第二个pose的时间要大于 time - pose_queue_duration_
-  while (timed_pose_queue_.size() > 2 && // timed_pose_queue_最少是2个数据
+  while (timed_pose_queue_.size() > 2 &&  // timed_pose_queue_最少是2个数据
          timed_pose_queue_[1].time <= time - pose_queue_duration_) {
     timed_pose_queue_.pop_front();
   }
@@ -162,13 +162,15 @@ void PoseExtrapolator::AddOdometryData(
       linear_velocity_in_tracking_frame_at_newest_odometry_time =
           odometry_pose_delta.translation() / odometry_time_delta;
 
-  // 根据位姿队列中最后一个位姿 乘以 上次添加位姿时的姿态预测到time时刻的姿态变化量
+  // 根据位姿队列中最后一个位姿 乘以
+  // 上次添加位姿时的姿态预测到time时刻的姿态变化量
   // 得到预测的 最新里程计数据时刻 tracking frame 在 local 坐标系下的姿态
   const Eigen::Quaterniond orientation_at_newest_odometry_time =
       timed_pose_queue_.back().pose.rotation() *
       ExtrapolateRotation(odometry_data_newest.time,
                           odometry_imu_tracker_.get());
-  // 将tracking frame的线速度进行旋转, 得到 local 坐标系下 tracking frame 的线速度
+  // 将tracking frame的线速度进行旋转, 得到 local 坐标系下 tracking frame
+  // 的线速度
   linear_velocity_from_odometry_ =
       orientation_at_newest_odometry_time *
       linear_velocity_in_tracking_frame_at_newest_odometry_time;
@@ -247,7 +249,8 @@ void PoseExtrapolator::TrimImuData() {
 
 // 修剪odom的数据队列,丢掉过时的odom数据
 void PoseExtrapolator::TrimOdometryData() {
-  // 保持odom队列中第二个数据的时间要大于最后一个位姿的时间, odometry_data_最少是2个
+  // 保持odom队列中第二个数据的时间要大于最后一个位姿的时间,
+  // odometry_data_最少是2个
   while (odometry_data_.size() > 2 && !timed_pose_queue_.empty() &&
          odometry_data_[1].time <= timed_pose_queue_.back().time) {
     odometry_data_.pop_front();
@@ -256,7 +259,7 @@ void PoseExtrapolator::TrimOdometryData() {
 
 /**
  * @brief 更新imu_tracker的状态, 并将imu_tracker的状态预测到time时刻
- * 
+ *
  * @param[in] time 要预测到的时刻
  * @param[in] imu_tracker 给定的先验状态
  */
@@ -269,8 +272,9 @@ void PoseExtrapolator::AdvanceImuTracker(const common::Time time,
   if (imu_data_.empty() || time < imu_data_.front().time) {
     // There is no IMU data until 'time', so we advance the ImuTracker and use
     // the angular velocities from poses and fake gravity to help 2D stability.
-    // 在time之前没有IMU数据, 因此我们推进ImuTracker, 并使用姿势和假重力产生的角速度来帮助2D稳定
-    
+    // 在time之前没有IMU数据, 因此我们推进ImuTracker,
+    // 并使用姿势和假重力产生的角速度来帮助2D稳定
+
     // 预测当前时刻的姿态与重力方向
     imu_tracker->Advance(time);
     // 使用 假的重力数据对加速度的测量进行更新
@@ -282,14 +286,17 @@ void PoseExtrapolator::AdvanceImuTracker(const common::Time time,
     return;
   }
 
-  // imu_tracker的时间比imu数据队列中第一个数据的时间早, 就先预测到imu数据队列中第一个数据的时间
+  // imu_tracker的时间比imu数据队列中第一个数据的时间早,
+  // 就先预测到imu数据队列中第一个数据的时间
   if (imu_tracker->time() < imu_data_.front().time) {
     // Advance to the beginning of 'imu_data_'.
     imu_tracker->Advance(imu_data_.front().time);
   }
 
-  // c++11: std::lower_bound() 是在区间内找到第一个大于等于 value 的值的位置并返回, 如果没找到就返回 end() 位置
-  // 在第四个参数位置可以自定义比较规则,在区域内查找第一个 **不符合** comp 规则的元素
+  // c++11: std::lower_bound() 是在区间内找到第一个大于等于 value
+  // 的值的位置并返回, 如果没找到就返回 end() 位置
+  // 在第四个参数位置可以自定义比较规则,在区域内查找第一个 **不符合** comp
+  // 规则的元素
 
   // 在imu数据队列中找到第一个时间上 大于等于 imu_tracker->time() 的数据的索引
   auto it = std::lower_bound(
@@ -298,7 +305,8 @@ void PoseExtrapolator::AdvanceImuTracker(const common::Time time,
         return imu_data.time < time;
       });
 
-  // 然后依次对imu数据进行预测, 以及添加观测, 直到imu_data_的时间大于等于time截止
+  // 然后依次对imu数据进行预测, 以及添加观测,
+  // 直到imu_data_的时间大于等于time截止
   while (it != imu_data_.end() && it->time < time) {
     // 预测出当前时刻的姿态与重力方向
     imu_tracker->Advance(it->time);
@@ -322,7 +330,8 @@ Eigen::Quaterniond PoseExtrapolator::ExtrapolateRotation(
 
   // 通过imu_tracker_获取上一次位姿校准时的姿态
   const Eigen::Quaterniond last_orientation = imu_tracker_->orientation();
-  // 求取上一帧到当前时刻预测出的姿态变化量：上一帧姿态四元数的逆 乘以 当前时刻预测出来的姿态四元数
+  // 求取上一帧到当前时刻预测出的姿态变化量：上一帧姿态四元数的逆 乘以
+  // 当前时刻预测出来的姿态四元数
   return last_orientation.inverse() * imu_tracker->orientation();
 }
 
@@ -331,7 +340,7 @@ Eigen::Vector3d PoseExtrapolator::ExtrapolateTranslation(common::Time time) {
   const TimedPose& newest_timed_pose = timed_pose_queue_.back();
   const double extrapolation_delta =
       common::ToSeconds(time - newest_timed_pose.time);
-      
+
   // 使用tracking frame 在 local坐标系下的线速度 乘以时间 得到平移量的预测
   if (odometry_data_.size() < 2) {
     return extrapolation_delta * linear_velocity_from_poses_;
@@ -346,7 +355,8 @@ PoseExtrapolator::ExtrapolatePosesWithGravity(
     const std::vector<common::Time>& times) {
   std::vector<transform::Rigid3f> poses;
 
-  // c++11: std::prev 获取一个距离指定迭代器 n 个元素的迭代器,而不改变输入迭代器的值
+  // c++11: std::prev 获取一个距离指定迭代器 n
+  // 个元素的迭代器,而不改变输入迭代器的值
   // 默认 n 为1,当 n 为正数时, 其返回的迭代器将位于 it 左侧；
   // 反之, 当 n 为负数时, 其返回的迭代器位于 it 右侧
 

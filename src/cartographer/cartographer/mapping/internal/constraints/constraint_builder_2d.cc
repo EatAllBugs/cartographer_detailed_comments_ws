@@ -59,7 +59,7 @@ transform::Rigid2d ComputeSubmapPose(const Submap2D& submap) {
 
 /**
  * @brief 构造函数
- * 
+ *
  * @param[in] options 约束构造器的配置参数
  * @param[in] thread_pool map_builder中构造的线程池
  */
@@ -83,7 +83,7 @@ ConstraintBuilder2D::~ConstraintBuilder2D() {
 
 /**
  * @brief 进行局部搜索窗口的约束计算(对局部子图进行回环检测)
- * 
+ *
  * @param[in] submap_id submap的id
  * @param[in] submap 单个submap
  * @param[in] node_id 节点的id
@@ -96,7 +96,7 @@ void ConstraintBuilder2D::MaybeAddConstraint(
     const transform::Rigid2d& initial_relative_pose) {
   // 超过范围的不进行约束的计算
   if (initial_relative_pose.translation().norm() >
-      options_.max_constraint_distance()) { // param: max_constraint_distance
+      options_.max_constraint_distance()) {  // param: max_constraint_distance
     return;
   }
   // 根据参数配置添加约束的频率
@@ -118,7 +118,7 @@ void ConstraintBuilder2D::MaybeAddConstraint(
   constraints_.emplace_back();
   kQueueLengthMetric->Set(constraints_.size());
   auto* const constraint = &constraints_.back();
-  
+
   // 为子图新建一个匹配器
   const auto* scan_matcher =
       DispatchScanMatcherConstruction(submap_id, submap->grid());
@@ -142,7 +142,7 @@ void ConstraintBuilder2D::MaybeAddConstraint(
 
 /**
  * @brief 进行全局搜索窗口的约束计算(对整体子图进行回环检测)
- * 
+ *
  * @param[in] submap_id submap的id
  * @param[in] submap 单个submap
  * @param[in] node_id 节点的id
@@ -156,7 +156,7 @@ void ConstraintBuilder2D::MaybeAddGlobalConstraint(
     LOG(WARNING)
         << "MaybeAddGlobalConstraint was called while WhenDone was scheduled.";
   }
-  
+
   // note: 对整体子图进行回环检测时没有距离的限制
 
   constraints_.emplace_back();
@@ -182,14 +182,15 @@ void ConstraintBuilder2D::MaybeAddGlobalConstraint(
 void ConstraintBuilder2D::NotifyEndOfNode() {
   absl::MutexLock locker(&mutex_);
   CHECK(finish_node_task_ != nullptr);
-  
+
   // 生成个任务: 将num_finished_nodes_自加, 记录完成约束计算节点的总个数
   finish_node_task_->SetWorkItem([this] {
     absl::MutexLock locker(&mutex_);
     ++num_finished_nodes_;
   });
 
-  // 将这个任务传入线程池中等待执行, 由于之前添加了依赖, 所以finish_node_task_一定会比计算约束更晚完成
+  // 将这个任务传入线程池中等待执行, 由于之前添加了依赖,
+  // 所以finish_node_task_一定会比计算约束更晚完成
   auto finish_node_task_handle =
       thread_pool_->Schedule(std::move(finish_node_task_));
 
@@ -255,7 +256,7 @@ ConstraintBuilder2D::DispatchScanMatcherConstruction(const SubmapId& submap_id,
 /**
  * @brief 计算节点和子图之间的一个约束(回环检测)
  *        用基于分支定界算法的匹配器进行粗匹配,然后用ceres进行精匹配
- * 
+ *
  * @param[in] submap_id submap的id
  * @param[in] submap 地图数据
  * @param[in] node_id 节点id
@@ -310,8 +311,7 @@ void ConstraintBuilder2D::ComputeConstraint(
       // 计算失败了就退出
       return;
     }
-  } 
-  else {
+  } else {
     // 节点与局部地图进行匹配
     kConstraintsSearchedMetric->Increment();
     if (submap_scan_matcher.fast_correlative_scan_matcher->Match(
@@ -325,7 +325,7 @@ void ConstraintBuilder2D::ComputeConstraint(
       return;
     }
   }
-  
+
   {
     absl::MutexLock locker(&mutex_);
     score_histogram_.Add(score);
@@ -366,7 +366,8 @@ void ConstraintBuilder2D::ComputeConstraint(
     } else {
       const transform::Rigid2d difference =
           initial_pose.inverse() * pose_estimate;
-      info << " differs by translation " << std::setprecision(2) // c++11: std::setprecision(2) 保留2个小数点
+      info << " differs by translation "
+           << std::setprecision(2)  // c++11: std::setprecision(2) 保留2个小数点
            << difference.translation().norm() << " rotation "
            << std::setprecision(3) << std::abs(difference.normalized_angle());
     }

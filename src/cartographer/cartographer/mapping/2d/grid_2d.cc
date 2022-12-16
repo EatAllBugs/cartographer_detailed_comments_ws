@@ -59,7 +59,7 @@ proto::GridOptions2D CreateGridOptions2D(
 
 /**
  * @brief 构造函数
- * 
+ *
  * @param[in] limits 地图坐标信息
  * @param[in] min_correspondence_cost 最小correspondence_cost 0.1
  * @param[in] max_correspondence_cost 最大correspondence_cost 0.9
@@ -71,7 +71,7 @@ Grid2D::Grid2D(const MapLimits& limits, float min_correspondence_cost,
     : limits_(limits),
       correspondence_cost_cells_(
           limits_.cell_limits().num_x_cells * limits_.cell_limits().num_y_cells,
-          kUnknownCorrespondenceValue),  // 0
+          kUnknownCorrespondenceValue),                   // 0
       min_correspondence_cost_(min_correspondence_cost),  // 0.1
       max_correspondence_cost_(max_correspondence_cost),  // 0.9
       // 新建转换表
@@ -175,7 +175,7 @@ void Grid2D::GrowLimits(const Eigen::Vector2f& point,
       }
       // 将新地图替换老地图, 拷贝
       *grids[grid_index] = new_cells;
-    } // end for
+    }  // end for
     // 更新地图尺寸
     limits_ = new_limits;
     if (!known_cells_box_.isEmpty()) {

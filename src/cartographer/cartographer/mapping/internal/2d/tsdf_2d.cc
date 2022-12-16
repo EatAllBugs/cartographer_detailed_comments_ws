@@ -23,7 +23,7 @@ namespace mapping {
 
 /**
  * @brief 构造函数
- * 
+ *
  * @param[in] limits 地图坐标信息
  * @param[in] truncation_distance 0.3
  * @param[in] max_weight 10.0

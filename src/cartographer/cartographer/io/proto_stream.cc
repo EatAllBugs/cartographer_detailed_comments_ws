@@ -77,7 +77,6 @@ bool ProtoStreamWriter::Close() {
   return !out_.fail();
 }
 
-
 // 读取pbstream文件, 并对前8个字节的数据进行校验
 ProtoStreamReader::ProtoStreamReader(const std::string& filename)
     : in_(filename, std::ios::in | std::ios::binary) {

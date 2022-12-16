@@ -544,19 +544,19 @@ void OptimizationProblem3D::Solve(
                     Eigen::AngleAxisd(
                         transform::GetYaw(fixed_frame_pose_in_map.rotation()),
                         Eigen::Vector3d::UnitZ())),
-                nullptr,
-                absl::make_unique<ceres::AutoDiffLocalParameterization<
-                    YawOnlyQuaternionPlus, 4, 1>>(),
+                nullptr, absl::make_unique<ceres::AutoDiffLocalParameterization<
+                             YawOnlyQuaternionPlus, 4, 1>>(),
                 &problem));
         fixed_frame_pose_initialized = true;
       }
 
       problem.AddResidualBlock(
           SpaCostFunction3D::CreateAutoDiffCostFunction(constraint_pose),
-          options_.fixed_frame_pose_use_tolerant_loss() ?
-              new ceres::TolerantLoss(
-            options_.fixed_frame_pose_tolerant_loss_param_a(),
-            options_.fixed_frame_pose_tolerant_loss_param_b()) : nullptr,
+          options_.fixed_frame_pose_use_tolerant_loss()
+              ? new ceres::TolerantLoss(
+                    options_.fixed_frame_pose_tolerant_loss_param_a(),
+                    options_.fixed_frame_pose_tolerant_loss_param_b())
+              : nullptr,
           C_fixed_frames.at(trajectory_id).rotation(),
           C_fixed_frames.at(trajectory_id).translation(),
           C_nodes.at(node_id).rotation(), C_nodes.at(node_id).translation());

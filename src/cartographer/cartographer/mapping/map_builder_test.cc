@@ -180,10 +180,9 @@ TEST_P(MapBuilderTestByGridType, LocalSlam2D) {
   map_builder_->FinishTrajectory(trajectory_id);
   map_builder_->pose_graph()->RunFinalOptimization();
   EXPECT_EQ(local_slam_result_poses_.size(), measurements.size());
-  EXPECT_NEAR(kTravelDistance,
-              (local_slam_result_poses_.back().translation() -
-               local_slam_result_poses_.front().translation())
-                  .norm(),
+  EXPECT_NEAR(kTravelDistance, (local_slam_result_poses_.back().translation() -
+                                local_slam_result_poses_.front().translation())
+                                   .norm(),
               0.1 * kTravelDistance);
 }
 
@@ -207,10 +206,9 @@ TEST_F(MapBuilderTest, LocalSlam3D) {
   map_builder_->FinishTrajectory(trajectory_id);
   map_builder_->pose_graph()->RunFinalOptimization();
   EXPECT_EQ(local_slam_result_poses_.size(), measurements.size());
-  EXPECT_NEAR(kTravelDistance,
-              (local_slam_result_poses_.back().translation() -
-               local_slam_result_poses_.front().translation())
-                  .norm(),
+  EXPECT_NEAR(kTravelDistance, (local_slam_result_poses_.back().translation() -
+                                local_slam_result_poses_.front().translation())
+                                   .norm(),
               0.1 * kTravelDistance);
 }
 
@@ -231,10 +229,9 @@ TEST_P(MapBuilderTestByGridType, GlobalSlam2D) {
   map_builder_->FinishTrajectory(trajectory_id);
   map_builder_->pose_graph()->RunFinalOptimization();
   EXPECT_EQ(local_slam_result_poses_.size(), measurements.size());
-  EXPECT_NEAR(kTravelDistance,
-              (local_slam_result_poses_.back().translation() -
-               local_slam_result_poses_.front().translation())
-                  .norm(),
+  EXPECT_NEAR(kTravelDistance, (local_slam_result_poses_.back().translation() -
+                                local_slam_result_poses_.front().translation())
+                                   .norm(),
               0.1 * kTravelDistance);
   EXPECT_GE(map_builder_->pose_graph()->constraints().size(), 50);
   EXPECT_THAT(map_builder_->pose_graph()->constraints(),
@@ -274,10 +271,9 @@ TEST_F(MapBuilderTest, GlobalSlam3D) {
   map_builder_->FinishTrajectory(trajectory_id);
   map_builder_->pose_graph()->RunFinalOptimization();
   EXPECT_EQ(local_slam_result_poses_.size(), measurements.size());
-  EXPECT_NEAR(kTravelDistance,
-              (local_slam_result_poses_.back().translation() -
-               local_slam_result_poses_.front().translation())
-                  .norm(),
+  EXPECT_NEAR(kTravelDistance, (local_slam_result_poses_.back().translation() -
+                                local_slam_result_poses_.front().translation())
+                                   .norm(),
               0.1 * kTravelDistance);
   EXPECT_GE(map_builder_->pose_graph()->constraints().size(), 10);
   EXPECT_THAT(map_builder_->pose_graph()->constraints(),
@@ -429,10 +425,9 @@ TEST_P(MapBuilderTestByGridType, LocalizationOnFrozenTrajectory2D) {
   map_builder_->FinishTrajectory(trajectory_id);
   map_builder_->pose_graph()->RunFinalOptimization();
   EXPECT_EQ(local_slam_result_poses_.size(), measurements.size());
-  EXPECT_NEAR(kTravelDistance,
-              (local_slam_result_poses_.back().translation() -
-               local_slam_result_poses_.front().translation())
-                  .norm(),
+  EXPECT_NEAR(kTravelDistance, (local_slam_result_poses_.back().translation() -
+                                local_slam_result_poses_.front().translation())
+                                   .norm(),
               0.15 * kTravelDistance);
   EXPECT_GE(map_builder_->pose_graph()->constraints().size(), 50);
   auto constraints = map_builder_->pose_graph()->constraints();

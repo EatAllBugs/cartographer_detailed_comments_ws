@@ -34,10 +34,9 @@ class RosMapWritingPointsProcessor
  public:
   constexpr static const char* kConfigurationFileActionName = "write_ros_map";
   RosMapWritingPointsProcessor(
-      double resolution,
-      const ::cartographer::mapping::proto::
-          ProbabilityGridRangeDataInserterOptions2D&
-              range_data_inserter_options,
+      double resolution, const ::cartographer::mapping::proto::
+                             ProbabilityGridRangeDataInserterOptions2D&
+                                 range_data_inserter_options,
       ::cartographer::io::FileWriterFactory file_writer_factory,
       const std::string& filestem, PointsProcessor* next);
   RosMapWritingPointsProcessor(const RosMapWritingPointsProcessor&) = delete;

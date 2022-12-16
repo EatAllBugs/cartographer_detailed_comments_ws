@@ -40,9 +40,9 @@ void CheckTrajectoryOptions(const TrajectoryOptions& options) {
 
 /**
  * @brief 读取lua文件内容, 将lua文件的内容赋值给TrajectoryOptions
- * 
+ *
  * @param[in] lua_parameter_dictionary lua字典
- * @return TrajectoryOptions 
+ * @return TrajectoryOptions
  */
 TrajectoryOptions CreateTrajectoryOptions(
     ::cartographer::common::LuaParameterDictionary* const

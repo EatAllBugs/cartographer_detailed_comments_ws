@@ -127,17 +127,16 @@ TEST(MsgConversion, LandmarkListToLandmarkData) {
   message.landmarks.push_back(landmark_0);
 
   LandmarkData actual_landmark_data = ToLandmarkData(message);
-  EXPECT_THAT(actual_landmark_data,
-              AllOf(Field(&LandmarkData::time, FromRos(message.header.stamp)),
-                    Field(&LandmarkData::landmark_observations,
-                          ElementsAre(EqualsLandmark(LandmarkObservation{
-                              "landmark_0",
-                              ::cartographer::transform::Rigid3d(
-                                  Eigen::Vector3d(1., 2., 3.),
-                                  Eigen::Quaterniond(1., 0., 0., 0.)),
-                              1.f,
-                              2.f,
-                          })))));
+  EXPECT_THAT(
+      actual_landmark_data,
+      AllOf(Field(&LandmarkData::time, FromRos(message.header.stamp)),
+            Field(&LandmarkData::landmark_observations,
+                  ElementsAre(EqualsLandmark(LandmarkObservation{
+                      "landmark_0", ::cartographer::transform::Rigid3d(
+                                        Eigen::Vector3d(1., 2., 3.),
+                                        Eigen::Quaterniond(1., 0., 0., 0.)),
+                      1.f, 2.f,
+                  })))));
 }
 
 TEST(MsgConversion, LatLongAltToEcef) {

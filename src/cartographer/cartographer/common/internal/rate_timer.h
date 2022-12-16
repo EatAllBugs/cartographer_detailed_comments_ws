@@ -59,7 +59,8 @@ class RateTimer {
   // rate. For example, if a sensor produces pulses at 10 Hz, but we call Pulse
   // at 20 Hz wall time, this will return 2.
   // 返回脉搏率（提供时间）与wall time率的比率
-  // 例如, 如果传感器产生 10 Hz 的脉冲, 但我们将 Pulse 称为 20 Hz 墙时间, 这将返回 2
+  // 例如, 如果传感器产生 10 Hz 的脉冲, 但我们将 Pulse 称为 20 Hz 墙时间,
+  // 这将返回 2
   double ComputeWallTimeRateRatio() const {
     if (events_.empty()) {
       return 0.;
@@ -88,7 +89,8 @@ class RateTimer {
       return "unknown";
     }
 
-    // c++11: std::fixed 与 std::setprecision(2) 一起使用, 表示输出2位小数点的数据
+    // c++11: std::fixed 与 std::setprecision(2) 一起使用,
+    // 表示输出2位小数点的数据
 
     std::ostringstream out;
     out << std::fixed << std::setprecision(2) << ComputeRate() << " Hz "

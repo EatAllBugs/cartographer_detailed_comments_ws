@@ -47,12 +47,13 @@ class LocalSlamResultData;
 // optimized pose estimates.
 // 此接口同时用于2D和3D SLAM
 // 将local slam 与 global slam 连接起来,实现了一个完整的slam
-// 即用于初始姿势估计的 local SLAM, 
+// 即用于初始姿势估计的 local SLAM,
 // 用于检测环路闭合的扫描匹配 以及 用于计算优化姿势估计的稀疏姿势图优化
 
 /**
  * @brief TrajectoryBuilderInterface是个接口类,没有具体实现
- * GlobalTrajectoryBuilder类 与 CollatedTrajectoryBuilder类 都继承了 TrajectoryBuilderInterface
+ * GlobalTrajectoryBuilder类 与 CollatedTrajectoryBuilder类 都继承了
+ * TrajectoryBuilderInterface
  * 并且都做了 AddSensorData() 的实现
  */
 class TrajectoryBuilderInterface {
@@ -64,9 +65,11 @@ class TrajectoryBuilderInterface {
   };
 
   // c++11: std::function 通用多态函数封装器
-  // std::function 的实例能存储、复制及调用任何可调用 (Callable) 目标: 
-  // 如函数、 lambda表达式、 bind表达式或其他函数对象, 还有指向成员函数指针和指向数据成员指针.
-  // 它也是对 C++ 中现有的可调用实体的一种类型安全的包裹（相对来说, 函数指针的调用不是类型安全的）
+  // std::function 的实例能存储、复制及调用任何可调用 (Callable) 目标:
+  // 如函数、 lambda表达式、 bind表达式或其他函数对象,
+  // 还有指向成员函数指针和指向数据成员指针.
+  // 它也是对 C++ 中现有的可调用实体的一种类型安全的包裹（相对来说,
+  // 函数指针的调用不是类型安全的）
 
   // c++11: using in c++11: c++11 的using可以用于模板部分具体化
 
@@ -80,7 +83,7 @@ class TrajectoryBuilderInterface {
                          std::unique_ptr<const InsertionResult>)>;
 
   struct SensorId {
-    // c++11: 限域枚举 enum class 
+    // c++11: 限域枚举 enum class
     enum class SensorType {
       RANGE = 0,
       IMU,

@@ -70,7 +70,7 @@ class OccupiedSpaceCostFunction2D {
 
  private:
   static constexpr int kPadding = INT_MAX / 4;
-  
+
   // 自定义网格
   class GridArrayAdapter {
    public:
@@ -85,7 +85,7 @@ class OccupiedSpaceCostFunction2D {
       if (row < kPadding || column < kPadding || row >= NumRows() - kPadding ||
           column >= NumCols() - kPadding) {
         *value = kMaxCorrespondenceCost;
-      } 
+      }
       // 根据索引获取free值
       else {
         *value = static_cast<double>(grid_.GetCorrespondenceCost(
@@ -125,7 +125,7 @@ ceres::CostFunction* CreateOccupiedSpaceCostFunction2D(
                                          ceres::DYNAMIC /* residuals */,
                                          3 /* pose variables */>(
       new OccupiedSpaceCostFunction2D(scaling_factor, point_cloud, grid),
-      point_cloud.size()); // 比固定残差维度的 多了一个参数
+      point_cloud.size());  // 比固定残差维度的 多了一个参数
 }
 
 }  // namespace scan_matching

@@ -36,10 +36,9 @@ void WriteBinaryPlyHeader(const bool has_color, const bool has_intensities,
                           const std::vector<std::string>& comments,
                           const int64 num_points,
                           FileWriter* const file_writer) {
-  const std::string color_header = !has_color ? ""
-                                              : "property uchar red\n"
-                                                "property uchar green\n"
-                                                "property uchar blue\n";
+  const std::string color_header = !has_color ? "" : "property uchar red\n"
+                                                     "property uchar green\n"
+                                                     "property uchar blue\n";
   const std::string intensity_header =
       !has_intensities ? "" : "property float intensity\n";
   std::ostringstream stream;

@@ -45,21 +45,18 @@ using ::testing::Field;
 class LandmarkDataTest : public ::testing::Test {
  protected:
   LandmarkDataTest()
-      : observations_(
-            {{
-                 "ID1",
-                 transform::Rigid3d(Eigen::Vector3d(1., 1., 1.),
-                                    Eigen::Quaterniond(1., 1., -1., -1.)),
-                 1.f,
-                 3.f,
-             },
-             {
-                 "ID2",
-                 transform::Rigid3d(Eigen::Vector3d(2., 2., 2.),
-                                    Eigen::Quaterniond(2., 2., -2., -2.)),
-                 2.f,
-                 4.f,
-             }}) {}
+      : observations_({{
+                           "ID1", transform::Rigid3d(
+                                      Eigen::Vector3d(1., 1., 1.),
+                                      Eigen::Quaterniond(1., 1., -1., -1.)),
+                           1.f, 3.f,
+                       },
+                       {
+                           "ID2", transform::Rigid3d(
+                                      Eigen::Vector3d(2., 2., 2.),
+                                      Eigen::Quaterniond(2., 2., -2., -2.)),
+                           2.f, 4.f,
+                       }}) {}
   std::vector<LandmarkObservation> observations_;
 };
 

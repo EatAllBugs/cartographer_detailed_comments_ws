@@ -30,8 +30,8 @@ namespace {
 
 /**
  * @brief 根据给定的文件全路径名, 获取文件名
- * 
- * @param[in] filepath 
+ *
+ * @param[in] filepath
  * @return const char* 返回文件名
  */
 const char* GetBasename(const char* filepath) {
@@ -43,7 +43,6 @@ const char* GetBasename(const char* filepath) {
 
 }  // namespace
 
-
 /**
  * @brief 在构造函数中调用AddLogSink(), 将ScopedRosLogSink类注册到glog中
  */
@@ -52,7 +51,7 @@ ScopedRosLogSink::~ScopedRosLogSink() { RemoveLogSink(this); }
 
 /**
  * @brief 重载了send()方法, 使用ROS_INFO进行glog消息的输出
- * 
+ *
  * @param[in] severity 消息级别
  * @param[in] filename 全路径文件名
  * @param[in] base_filename 文件名
@@ -63,8 +62,7 @@ ScopedRosLogSink::~ScopedRosLogSink() { RemoveLogSink(this); }
  */
 void ScopedRosLogSink::send(const ::google::LogSeverity severity,
                             const char* const filename,
-                            const char* const base_filename, 
-                            const int line,
+                            const char* const base_filename, const int line,
                             const struct std::tm* const tm_time,
                             const char* const message,
                             const size_t message_len) {

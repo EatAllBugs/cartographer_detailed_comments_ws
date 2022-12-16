@@ -30,42 +30,43 @@ namespace mapping {
 
 // Wires up the complete SLAM stack with TrajectoryBuilders (for local submaps)
 // and a PoseGraph for loop closure.
-// 包含前端(TrajectoryBuilders,scan to submap) 与 后端(用于查找回环的PoseGraph) 的完整的SLAM
+// 包含前端(TrajectoryBuilders,scan to submap) 与 后端(用于查找回环的PoseGraph)
+// 的完整的SLAM
 class MapBuilder : public MapBuilderInterface {
  public:
-  explicit MapBuilder(const proto::MapBuilderOptions &options);
+  explicit MapBuilder(const proto::MapBuilderOptions& options);
   ~MapBuilder() override {}
 
-  MapBuilder(const MapBuilder &) = delete;
-  MapBuilder &operator=(const MapBuilder &) = delete;
+  MapBuilder(const MapBuilder&) = delete;
+  MapBuilder& operator=(const MapBuilder&) = delete;
 
   int AddTrajectoryBuilder(
-      const std::set<SensorId> &expected_sensor_ids,
-      const proto::TrajectoryBuilderOptions &trajectory_options,
+      const std::set<SensorId>& expected_sensor_ids,
+      const proto::TrajectoryBuilderOptions& trajectory_options,
       LocalSlamResultCallback local_slam_result_callback) override;
 
   int AddTrajectoryForDeserialization(
-      const proto::TrajectoryBuilderOptionsWithSensorIds
-          &options_with_sensor_ids_proto) override;
+      const proto::TrajectoryBuilderOptionsWithSensorIds&
+          options_with_sensor_ids_proto) override;
 
   void FinishTrajectory(int trajectory_id) override;
 
-  std::string SubmapToProto(const SubmapId &submap_id,
-                            proto::SubmapQuery::Response *response) override;
+  std::string SubmapToProto(const SubmapId& submap_id,
+                            proto::SubmapQuery::Response* response) override;
 
   void SerializeState(bool include_unfinished_submaps,
-                      io::ProtoStreamWriterInterface *writer) override;
+                      io::ProtoStreamWriterInterface* writer) override;
 
   bool SerializeStateToFile(bool include_unfinished_submaps,
-                            const std::string &filename) override;
+                            const std::string& filename) override;
 
-  std::map<int, int> LoadState(io::ProtoStreamReaderInterface *reader,
+  std::map<int, int> LoadState(io::ProtoStreamReaderInterface* reader,
                                bool load_frozen_state) override;
 
-  std::map<int, int> LoadStateFromFile(const std::string &filename,
+  std::map<int, int> LoadStateFromFile(const std::string& filename,
                                        const bool load_frozen_state) override;
 
-  mapping::PoseGraphInterface *pose_graph() override {
+  mapping::PoseGraphInterface* pose_graph() override {
     return pose_graph_.get();
   }
 
@@ -74,19 +75,19 @@ class MapBuilder : public MapBuilderInterface {
   }
 
   // 返回指向CollatedTrajectoryBuilder的指针
-  mapping::TrajectoryBuilderInterface *GetTrajectoryBuilder(
+  mapping::TrajectoryBuilderInterface* GetTrajectoryBuilder(
       int trajectory_id) const override {
     return trajectory_builders_.at(trajectory_id).get();
   }
 
-  const std::vector<proto::TrajectoryBuilderOptionsWithSensorIds>
-      &GetAllTrajectoryBuilderOptions() const override {
+  const std::vector<proto::TrajectoryBuilderOptionsWithSensorIds>&
+  GetAllTrajectoryBuilderOptions() const override {
     return all_trajectory_builder_options_;
   }
 
  private:
   const proto::MapBuilderOptions options_;
-  common::ThreadPool thread_pool_; // 线程池
+  common::ThreadPool thread_pool_;  // 线程池
 
   std::unique_ptr<PoseGraph> pose_graph_;
 

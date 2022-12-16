@@ -47,7 +47,8 @@ struct QueueKey {
 // sorted order. It will wait to see at least one value for each unfinished
 // queue before dispatching the next time ordered value across all queues.
 // 维护排序后的传感器数据的多个队列, 并按合并排序的顺序进行调度
-// 它将等待为每个未完成的队列查看至少一个值, 然后再在所有队列中分派下一个按时间排序的值.
+// 它将等待为每个未完成的队列查看至少一个值,
+// 然后再在所有队列中分派下一个按时间排序的值.
 
 // This class is thread-compatible. 此类是线程兼容的
 
@@ -87,9 +88,9 @@ class OrderedMultiQueue {
 
  private:
   struct Queue {
-    common::BlockingQueue<std::unique_ptr<Data>> queue;   // 存储数据的队列
-    Callback callback;                                    // 本数据队列对应的回调函数
-    bool finished = false;                                // 这个queue是否finished
+    common::BlockingQueue<std::unique_ptr<Data>> queue;  // 存储数据的队列
+    Callback callback;      // 本数据队列对应的回调函数
+    bool finished = false;  // 这个queue是否finished
   };
 
   void Dispatch();
@@ -100,7 +101,7 @@ class OrderedMultiQueue {
   common::Time last_dispatched_time_ = common::Time::min();
 
   std::map<int, common::Time> common_start_time_per_trajectory_;
-  std::map<QueueKey, Queue> queues_;   // 多个数据队列
+  std::map<QueueKey, Queue> queues_;  // 多个数据队列
   QueueKey blocker_;
 };
 

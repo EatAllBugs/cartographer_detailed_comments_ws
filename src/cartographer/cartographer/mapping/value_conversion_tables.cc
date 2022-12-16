@@ -27,16 +27,15 @@ constexpr uint16 kUpdateMarker = 1u << 15;
 
 /**
  * @brief 将[0, 1~32767] 映射到 [0.9, 0.1~0.9]
- * 
+ *
  * @param[in] value [0, 32767]的值, 0 对应0.9
  * @param[in] unknown_value 0
- * @param[in] unknown_result 0.9 
+ * @param[in] unknown_result 0.9
  * @param[in] lower_bound 0.1 下界
  * @param[in] upper_bound 0.9 上界
  * @return float 转换后的数值
  */
-float SlowValueToBoundedFloat(const uint16 value, 
-                              const uint16 unknown_value,
+float SlowValueToBoundedFloat(const uint16 value, const uint16 unknown_value,
                               const float unknown_result,
                               const float lower_bound,
                               const float upper_bound) {
@@ -48,11 +47,11 @@ float SlowValueToBoundedFloat(const uint16 value,
 
 /**
  * @brief 新建转换表
- * 
- * @param[in] unknown_value 0 
- * @param[in] unknown_result 0.9 
- * @param[in] lower_bound 0.1 
- * @param[in] upper_bound 0.9 
+ *
+ * @param[in] unknown_value 0
+ * @param[in] unknown_result 0.9
+ * @param[in] lower_bound 0.1
+ * @param[in] upper_bound 0.9
  * @return std::unique_ptr<std::vector<float>> 转换表的指针
  */
 std::unique_ptr<std::vector<float>> PrecomputeValueToBoundedFloat(
@@ -60,7 +59,7 @@ std::unique_ptr<std::vector<float>> PrecomputeValueToBoundedFloat(
     const float lower_bound, const float upper_bound) {
   auto result = absl::make_unique<std::vector<float>>();
   // num_values = 65536
-  size_t num_values = std::numeric_limits<uint16>::max() + 1; 
+  size_t num_values = std::numeric_limits<uint16>::max() + 1;
   // 申请空间
   result->reserve(num_values);
 
@@ -68,7 +67,8 @@ std::unique_ptr<std::vector<float>> PrecomputeValueToBoundedFloat(
   // vector的个数为65536, 所以存的是2遍[0-32767]的映射
   for (size_t value = 0; value != num_values; ++value) {
     result->push_back(SlowValueToBoundedFloat(
-        static_cast<uint16>(value) & ~kUpdateMarker, // 取右边15位的数据, 0-32767
+        static_cast<uint16>(value) &
+            ~kUpdateMarker,  // 取右边15位的数据, 0-32767
         unknown_value,
         unknown_result, lower_bound, upper_bound));
   }
@@ -78,11 +78,11 @@ std::unique_ptr<std::vector<float>> PrecomputeValueToBoundedFloat(
 
 /**
  * @brief 获取转换表, 这个函数只会调用1次
- * 
+ *
  * @param[in] unknown_result 0.9 未知时的值
  * @param[in] lower_bound 0.1 最小correspondence_cost
  * @param[in] upper_bound 0.9 最大correspondence_cost
- * @return const std::vector<float>* 
+ * @return const std::vector<float>*
  */
 const std::vector<float>* ValueConversionTables::GetConversionTable(
     float unknown_result, float lower_bound, float upper_bound) {
@@ -98,7 +98,7 @@ const std::vector<float>* ValueConversionTables::GetConversionTable(
         bounds, PrecomputeValueToBoundedFloat(0, unknown_result, lower_bound,
                                               upper_bound));
     return insertion_result.first->second.get();
-  } 
+  }
   // 如果存在就直接返回原始指针
   else {
     return lookup_table_iterator->second.get();

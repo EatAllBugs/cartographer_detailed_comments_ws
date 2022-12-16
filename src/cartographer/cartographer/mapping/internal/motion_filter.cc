@@ -38,9 +38,9 @@ MotionFilter::MotionFilter(const proto::MotionFilterOptions& options)
     : options_(options) {}
 
 /**
- * @brief 将当前时间与当前位姿 与 上一次保存的时间与位姿进行比对, 
+ * @brief 将当前时间与当前位姿 与 上一次保存的时间与位姿进行比对,
  * 时间,移动距离,角度 变换量大于阈值 时返回true
- * 
+ *
  * @param[in] time 当前的时间
  * @param[in] pose 当前的位姿
  * @return true 两个位姿的时间与距离很接近

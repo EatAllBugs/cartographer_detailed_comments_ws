@@ -37,8 +37,8 @@ static auto* kScanMatcherResidualAngleMetric = metrics::Histogram::Null();
 
 /**
  * @brief 构造函数
- * 
- * @param[in] options 
+ *
+ * @param[in] options
  * @param[in] expected_range_sensor_ids 所有range类型的话题
  */
 LocalTrajectoryBuilder2D::LocalTrajectoryBuilder2D(
@@ -56,8 +56,9 @@ LocalTrajectoryBuilder2D::~LocalTrajectoryBuilder2D() {}
 
 /**
  * @brief 先进行点云的旋转与z方向的滤波, 然后再进行体素滤波减少数据量
- * 
- * @param[in] transform_to_gravity_aligned_frame 将点云变换到原点处, 且姿态为0的坐标变换
+ *
+ * @param[in] transform_to_gravity_aligned_frame 将点云变换到原点处,
+ * 且姿态为0的坐标变换
  * @param[in] range_data 传入的点云
  * @return sensor::RangeData 处理后的点云 拷贝
  */
@@ -65,21 +66,24 @@ sensor::RangeData
 LocalTrajectoryBuilder2D::TransformToGravityAlignedFrameAndFilter(
     const transform::Rigid3f& transform_to_gravity_aligned_frame,
     const sensor::RangeData& range_data) const {
-  // Step: 5 将原点位于机器人当前位姿处的点云 转成 原点位于local坐标系原点处的点云, 再进行z轴上的过滤
-  const sensor::RangeData cropped =
-      sensor::CropRangeData(sensor::TransformRangeData(
-                                range_data, transform_to_gravity_aligned_frame),
-                            options_.min_z(), options_.max_z()); // param: min_z max_z
+  // Step: 5 将原点位于机器人当前位姿处的点云 转成
+  // 原点位于local坐标系原点处的点云, 再进行z轴上的过滤
+  const sensor::RangeData cropped = sensor::CropRangeData(
+      sensor::TransformRangeData(range_data,
+                                 transform_to_gravity_aligned_frame),
+      options_.min_z(), options_.max_z());  // param: min_z max_z
   // Step: 6 对点云进行体素滤波
   return sensor::RangeData{
       cropped.origin,
-      sensor::VoxelFilter(cropped.returns, options_.voxel_filter_size()), // param: voxel_filter_size
+      sensor::VoxelFilter(
+          cropped.returns,
+          options_.voxel_filter_size()),  // param: voxel_filter_size
       sensor::VoxelFilter(cropped.misses, options_.voxel_filter_size())};
 }
 
 /**
  * @brief 进行扫描匹配
- * 
+ *
  * @param[in] time 点云的时间
  * @param[in] pose_prediction 先验位姿
  * @param[in] filtered_gravity_aligned_point_cloud 匹配用的点云
@@ -131,16 +135,16 @@ std::unique_ptr<transform::Rigid2d> LocalTrajectoryBuilder2D::ScanMatch(
 
 /**
  * @brief 处理点云数据, 进行扫描匹配, 将点云写成地图
- * 
+ *
  * @param[in] sensor_id 点云数据对应的话题名称
  * @param[in] unsynchronized_data 传入的点云数据
- * @return std::unique_ptr<LocalTrajectoryBuilder2D::MatchingResult> 匹配后的结果
+ * @return std::unique_ptr<LocalTrajectoryBuilder2D::MatchingResult>
+ * 匹配后的结果
  */
 std::unique_ptr<LocalTrajectoryBuilder2D::MatchingResult>
 LocalTrajectoryBuilder2D::AddRangeData(
     const std::string& sensor_id,
     const sensor::TimedPointCloudData& unsynchronized_data) {
-  
   // Step: 1 进行多个雷达点云数据的时间同步, 点云的坐标是相对于tracking_frame的
   auto synchronized_data =
       range_data_collator_.AddRangeData(sensor_id, unsynchronized_data);
@@ -195,8 +199,9 @@ LocalTrajectoryBuilder2D::AddRangeData(
       }
       time_point = extrapolator_->GetLastExtrapolatedTime();
     }
-    
-    // Step: 2 预测出 每个点的时间戳时刻, tracking frame 在 local slam 坐标系下的位姿
+
+    // Step: 2 预测出 每个点的时间戳时刻, tracking frame 在 local slam
+    // 坐标系下的位姿
     range_data_poses.push_back(
         extrapolator_->ExtrapolatePose(time_point).cast<float>());
   }
@@ -218,15 +223,16 @@ LocalTrajectoryBuilder2D::AddRangeData(
     const Eigen::Vector3f origin_in_local =
         range_data_poses[i] *
         synchronized_data.origins.at(synchronized_data.ranges[i].origin_index);
-    
-    // Step: 3 运动畸变的去除, 将相对于tracking_frame的hit坐标 转成 local坐标系下的坐标
+
+    // Step: 3 运动畸变的去除, 将相对于tracking_frame的hit坐标 转成
+    // local坐标系下的坐标
     sensor::RangefinderPoint hit_in_local =
         range_data_poses[i] * sensor::ToRangefinderPoint(hit);
-    
+
     // 计算这个点的距离, 这里用的是去畸变之后的点的距离
     const Eigen::Vector3f delta = hit_in_local.position - origin_in_local;
     const float range = delta.norm();
-    
+
     // param: min_range max_range
     if (range >= options_.min_range()) {
       if (range <= options_.max_range()) {
@@ -241,7 +247,7 @@ LocalTrajectoryBuilder2D::AddRangeData(
         accumulated_range_data_.misses.push_back(hit_in_local);
       }
     }
-  } // end for
+  }  // end for
 
   // 有一帧有效的数据了
   ++num_accumulated_;
@@ -267,7 +273,7 @@ LocalTrajectoryBuilder2D::AddRangeData(
     // 'time'.
     // 以最后一个点的时间戳估计出的坐标为这帧数据的原点
     accumulated_range_data_.origin = range_data_poses.back().translation();
-    
+
     return AddAccumulatedRangeData(
         time,
         // 将点云变换到local原点处, 且姿态为0
@@ -282,12 +288,12 @@ LocalTrajectoryBuilder2D::AddRangeData(
 
 /**
  * @brief 进行扫描匹配, 将点云写入地图
- * 
+ *
  * @param[in] time 点云的时间戳
  * @param[in] gravity_aligned_range_data 原点位于local坐标系原点处的点云
  * @param[in] gravity_alignment 机器人当前姿态
  * @param[in] sensor_duration 2帧点云数据的时间差
- * @return std::unique_ptr<LocalTrajectoryBuilder2D::MatchingResult> 
+ * @return std::unique_ptr<LocalTrajectoryBuilder2D::MatchingResult>
  */
 std::unique_ptr<LocalTrajectoryBuilder2D::MatchingResult>
 LocalTrajectoryBuilder2D::AddAccumulatedRangeData(
@@ -333,11 +339,12 @@ LocalTrajectoryBuilder2D::AddAccumulatedRangeData(
   // 校准位姿估计器
   extrapolator_->AddPose(time, pose_estimate);
 
-  // Step: 8 将 原点位于local坐标系原点处的点云 变换成 原点位于匹配后的位姿处的点云
+  // Step: 8 将 原点位于local坐标系原点处的点云 变换成
+  // 原点位于匹配后的位姿处的点云
   sensor::RangeData range_data_in_local =
       TransformRangeData(gravity_aligned_range_data,
                          transform::Embed3D(pose_estimate_2d->cast<float>()));
-  
+
   // 将校正后的雷达数据写入submap
   std::unique_ptr<InsertionResult> insertion_result = InsertIntoSubmap(
       time, range_data_in_local, filtered_gravity_aligned_point_cloud,
@@ -367,7 +374,7 @@ LocalTrajectoryBuilder2D::AddAccumulatedRangeData(
   last_wall_time_ = wall_time;
   last_thread_cpu_time_seconds_ = thread_cpu_time_seconds;
 
-  // 返回结果 
+  // 返回结果
   return absl::make_unique<MatchingResult>(
       MatchingResult{time, pose_estimate, std::move(range_data_in_local),
                      std::move(insertion_result)});
@@ -375,13 +382,13 @@ LocalTrajectoryBuilder2D::AddAccumulatedRangeData(
 
 /**
  * @brief 将处理后的雷达数据写入submap
- * 
+ *
  * @param[in] time 点云的时间
  * @param[in] range_data_in_local 校正后的点云
  * @param[in] filtered_gravity_aligned_point_cloud 自适应体素滤波后的点云
  * @param[in] pose_estimate 扫描匹配后的三维位姿
- * @param[in] gravity_alignment 
- * @return std::unique_ptr<LocalTrajectoryBuilder2D::InsertionResult> 
+ * @param[in] gravity_alignment
+ * @return std::unique_ptr<LocalTrajectoryBuilder2D::InsertionResult>
  */
 std::unique_ptr<LocalTrajectoryBuilder2D::InsertionResult>
 LocalTrajectoryBuilder2D::InsertIntoSubmap(
@@ -402,7 +409,8 @@ LocalTrajectoryBuilder2D::InsertIntoSubmap(
       std::make_shared<const TrajectoryNode::Data>(TrajectoryNode::Data{
           time,
           gravity_alignment,
-          filtered_gravity_aligned_point_cloud,  // 这里存的是体素滤波后的点云, 不是校准后的点云
+          filtered_gravity_aligned_point_cloud,  // 这里存的是体素滤波后的点云,
+                                                 // 不是校准后的点云
           {},  // 'high_resolution_point_cloud' is only used in 3D.
           {},  // 'low_resolution_point_cloud' is only used in 3D.
           {},  // 'rotational_scan_matcher_histogram' is only used in 3D.
@@ -441,12 +449,13 @@ void LocalTrajectoryBuilder2D::InitializeExtrapolator(const common::Time time) {
 
   // 初始化位姿推测器
   extrapolator_ = absl::make_unique<PoseExtrapolator>(
-      ::cartographer::common::FromSeconds(options_.pose_extrapolator_options()
-                                              .constant_velocity()
-                                              .pose_queue_duration()), // 0.001s
+      ::cartographer::common::FromSeconds(
+          options_.pose_extrapolator_options()
+              .constant_velocity()
+              .pose_queue_duration()),  // 0.001s
       options_.pose_extrapolator_options()
           .constant_velocity()
-          .imu_gravity_time_constant()); // 10
+          .imu_gravity_time_constant());  // 10
   // 添加初始位姿
   extrapolator_->AddPose(time, transform::Rigid3d::Identity());
 }

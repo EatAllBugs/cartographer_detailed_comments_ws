@@ -72,7 +72,7 @@ proto::SubmapsOptions2D CreateSubmapsOptions2D(
 
 /**
  * @brief 构造函数
- * 
+ *
  * @param[in] origin Submap2D的原点,保存在Submap类里
  * @param[in] grid 地图数据的指针
  * @param[in] conversion_tables 地图数据的转换表
@@ -139,7 +139,7 @@ void Submap2D::UpdateFromProto(const proto::Submap& proto) {
 
 /**
  * @brief 将地图进行压缩, 放入response
- * 
+ *
  * @param[out] response 压缩后的地图数据
  */
 void Submap2D::ToResponseProto(
@@ -231,32 +231,32 @@ std::unique_ptr<GridInterface> ActiveSubmaps2D::CreateGrid(
     const Eigen::Vector2f& origin) {
   // 地图初始大小,100个栅格
   constexpr int kInitialSubmapSize = 100;
-  float resolution = options_.grid_options_2d().resolution(); // param: grid_options_2d.resolution
+  float resolution = options_.grid_options_2d()
+                         .resolution();  // param: grid_options_2d.resolution
   switch (options_.grid_options_2d().grid_type()) {
     // 概率栅格地图
     case proto::GridOptions2D::PROBABILITY_GRID:
       return absl::make_unique<ProbabilityGrid>(
           MapLimits(resolution,
                     // 左上角坐标为坐标系的最大值, origin位于地图的中间
-                    origin.cast<double>() + 0.5 * kInitialSubmapSize *
-                                                resolution *
-                                                Eigen::Vector2d::Ones(),
+                    origin.cast<double>() +
+                        0.5 * kInitialSubmapSize * resolution *
+                            Eigen::Vector2d::Ones(),
                     CellLimits(kInitialSubmapSize, kInitialSubmapSize)),
           &conversion_tables_);
     // tsdf地图
     case proto::GridOptions2D::TSDF:
       return absl::make_unique<TSDF2D>(
-          MapLimits(resolution,
-                    origin.cast<double>() + 0.5 * kInitialSubmapSize *
-                                                resolution *
-                                                Eigen::Vector2d::Ones(),
+          MapLimits(resolution, origin.cast<double>() +
+                                    0.5 * kInitialSubmapSize * resolution *
+                                        Eigen::Vector2d::Ones(),
                     CellLimits(kInitialSubmapSize, kInitialSubmapSize)),
           options_.range_data_inserter_options()
               .tsdf_range_data_inserter_options_2d()
-              .truncation_distance(),               // 0.3
+              .truncation_distance(),  // 0.3
           options_.range_data_inserter_options()
               .tsdf_range_data_inserter_options_2d()
-              .maximum_weight(),                    // 10.0
+              .maximum_weight(),  // 10.0
           &conversion_tables_);
     default:
       LOG(FATAL) << "Unknown GridType.";
@@ -275,9 +275,8 @@ void ActiveSubmaps2D::AddSubmap(const Eigen::Vector2f& origin) {
   }
   // 新建一个子图, 并保存指向新子图的智能指针
   submaps_.push_back(absl::make_unique<Submap2D>(
-      origin,
-      std::unique_ptr<Grid2D>(
-          static_cast<Grid2D*>(CreateGrid(origin).release())),
+      origin, std::unique_ptr<Grid2D>(
+                  static_cast<Grid2D*>(CreateGrid(origin).release())),
       &conversion_tables_));
 }
 

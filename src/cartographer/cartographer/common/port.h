@@ -37,7 +37,8 @@ using uint64 = uint64_t;  // 8个字节的无符号整型
 
 namespace common {
 
-// c++11: std::lround 返回最接近x的long int整数 eg: lround(15.2) -> 15, lround(15.8) -> 16
+// c++11: std::lround 返回最接近x的long int整数 eg: lround(15.2) -> 15,
+// lround(15.8) -> 16
 // 返回最接近x的整数
 inline int RoundToInt(const float x) { return std::lround(x); }
 
@@ -49,7 +50,7 @@ inline int64 RoundToInt64(const double x) { return std::lround(x); }
 
 /**
  * @brief 将字符串进行压缩
- * 
+ *
  * @param[in] uncompressed 压缩前的string
  * @param[out] compressed 压缩后的string
  */
@@ -67,7 +68,7 @@ inline void FastGzipString(const std::string& uncompressed,
 
 /**
  * @brief 将字符串进行解压
- * 
+ *
  * @param[in] compressed 压缩的string
  * @param[out] decompressed 解压后的string
  */

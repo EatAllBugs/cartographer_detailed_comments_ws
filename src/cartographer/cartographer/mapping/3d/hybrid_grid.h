@@ -71,7 +71,7 @@ bool IsDefaultValue(const std::vector<TElementType>& v) {
 template <typename TValueType, int kBits>
 class FlatGrid {
  public:
-  using ValueType = TValueType; // TValueType = uint16, kBits = 3
+  using ValueType = TValueType;  // TValueType = uint16, kBits = 3
 
   // Creates a new flat grid with all values being default constructed.
   FlatGrid() {
@@ -137,7 +137,7 @@ class FlatGrid {
   };
 
  private:
-  std::array<ValueType, 1 << (3 * kBits)> cells_; // 1 << (3 * kBits) = 512
+  std::array<ValueType, 1 << (3 * kBits)> cells_;  // 1 << (3 * kBits) = 512
 };
 
 // A grid consisting of '2^kBits' x '2^kBits' x '2^kBits' grids of type

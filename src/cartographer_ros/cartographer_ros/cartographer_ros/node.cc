@@ -17,9 +17,9 @@
 #include "cartographer_ros/node.h"
 
 #include <chrono>
+#include <cstdlib>
 #include <string>
 #include <vector>
-#include <cstdlib>
 
 #include "Eigen/Core"
 #include "absl/memory/memory.h"
@@ -50,13 +50,13 @@
 #include "visualization_msgs/MarkerArray.h"
 
 // lx add
+#include <pcl/io/pcd_io.h>
 #include "cartographer/mapping/id.h"
 #include "cartographer/mapping/trajectory_node.h"
 #include "cartographer/sensor/point_cloud.h"
 #include "pcl/point_cloud.h"
 #include "pcl/point_types.h"
 #include "pcl_conversions/pcl_conversions.h"
-#include <pcl/io/pcd_io.h>
 
 namespace cartographer_ros {
 
@@ -78,7 +78,7 @@ namespace {
 
 /**
  * @brief 在node_handle中订阅topic,并与传入的回调函数进行注册
- * 
+ *
  * @tparam MessageType 模板参数,消息的数据类型
  * @param[in] handler 函数指针, 接受传入的函数的地址
  * @param[in] trajectory_id 轨迹id
@@ -93,13 +93,13 @@ template <typename MessageType>
                           const typename MessageType::ConstPtr&),
     const int trajectory_id, const std::string& topic,
     ::ros::NodeHandle* const node_handle, Node* const node) {
-
   return node_handle->subscribe<MessageType>(
       topic, kInfiniteSubscriberQueueSize,  // kInfiniteSubscriberQueueSize = 0
       // 使用boost::function构造回调函数,被subscribe注册
       boost::function<void(const typename MessageType::ConstPtr&)>(
           // c++11: lambda表达式
-          [node, handler, trajectory_id, topic](const typename MessageType::ConstPtr& msg) {
+          [node, handler, trajectory_id,
+           topic](const typename MessageType::ConstPtr& msg) {
             (node->*handler)(trajectory_id, topic, msg);
           }));
 }
@@ -123,7 +123,8 @@ std::string TrajectoryStateToString(const TrajectoryState trajectory_state) {
 
 /**
  * @brief
- * 声明ROS的一些topic的发布器, 服务的发布器, 以及将时间驱动的函数与定时器进行绑定
+ * 声明ROS的一些topic的发布器, 服务的发布器,
+ * 以及将时间驱动的函数与定时器进行绑定
  *
  * @param[in] node_options 配置文件的内容
  * @param[in] map_builder SLAM算法的具体实现
@@ -209,11 +210,13 @@ Node::Node(
   wall_timers_.push_back(node_handle_.createWallTimer(
       ::ros::WallDuration(
           node_options_.trajectory_publish_period_sec),  // 30e-3s
-      &Node::PublishTrajectoryNodeList, this));
+      &Node::PublishTrajectoryNodeList,
+      this));
   wall_timers_.push_back(node_handle_.createWallTimer(
       ::ros::WallDuration(
           node_options_.trajectory_publish_period_sec),  // 30e-3s
-      &Node::PublishLandmarkPosesList, this));
+      &Node::PublishLandmarkPosesList,
+      this));
   wall_timers_.push_back(node_handle_.createWallTimer(
       ::ros::WallDuration(kConstraintPublishPeriodSec),  // 0.5s
       &Node::PublishConstraintList, this));
@@ -285,7 +288,7 @@ void Node::PublishSubmapList(const ::ros::WallTimerEvent& unused_timer_event) {
 
 /**
  * @brief 新增一个位姿估计器
- * 
+ *
  * @param[in] trajectory_id 轨迹id
  * @param[in] options 参数配置
  */
@@ -314,8 +317,7 @@ void Node::AddExtrapolator(const int trajectory_id,
 
   // 以1ms, 以及重力常数10, 作为参数构造PoseExtrapolator
   extrapolators_.emplace(
-      std::piecewise_construct, 
-      std::forward_as_tuple(trajectory_id),
+      std::piecewise_construct, std::forward_as_tuple(trajectory_id),
       std::forward_as_tuple(
           ::cartographer::common::FromSeconds(kExtrapolationEstimationTimeSec),
           gravity_time_constant));
@@ -323,7 +325,7 @@ void Node::AddExtrapolator(const int trajectory_id,
 
 /**
  * @brief 新生成一个传感器数据采样器
- * 
+ *
  * @param[in] trajectory_id 轨迹id
  * @param[in] options 参数配置
  */
@@ -331,13 +333,10 @@ void Node::AddSensorSamplers(const int trajectory_id,
                              const TrajectoryOptions& options) {
   CHECK(sensor_samplers_.count(trajectory_id) == 0);
   sensor_samplers_.emplace(
-      std::piecewise_construct, 
-      std::forward_as_tuple(trajectory_id),
+      std::piecewise_construct, std::forward_as_tuple(trajectory_id),
       std::forward_as_tuple(
-          options.rangefinder_sampling_ratio, 
-          options.odometry_sampling_ratio,
-          options.fixed_frame_pose_sampling_ratio, 
-          options.imu_sampling_ratio,
+          options.rangefinder_sampling_ratio, options.odometry_sampling_ratio,
+          options.fixed_frame_pose_sampling_ratio, options.imu_sampling_ratio,
           options.landmarks_sampling_ratio));
 }
 
@@ -391,7 +390,7 @@ void Node::PublishLocalTrajectoryData(const ::ros::TimerEvent& timer_event) {
       // 将当前的pose加入到extrapolator中, 更新extrapolator的时间与状态
       extrapolator.AddPose(trajectory_data.local_slam_data->time,
                            trajectory_data.local_slam_data->local_pose);
-    } // end if
+    }  // end if
 
     geometry_msgs::TransformStamped stamped_transform;
     // If we do not publish a new point cloud, we still allow time of the
@@ -422,7 +421,7 @@ void Node::PublishLocalTrajectoryData(const ::ros::TimerEvent& timer_event) {
         node_options_.use_pose_extrapolator
             ? extrapolator.ExtrapolatePose(now)
             : trajectory_data.local_slam_data->local_pose;
-    
+
     // 获取当前位姿在local坐标系下的坐标
     const Rigid3d tracking_to_local = [&] {
       // 是否将变换投影到平面上
@@ -444,7 +443,7 @@ void Node::PublishLocalTrajectoryData(const ::ros::TimerEvent& timer_event) {
         // 则发布 map_frame -> odom -> published_frame 的tf
         if (trajectory_data.trajectory_options.provide_odom_frame) {
           std::vector<geometry_msgs::TransformStamped> stamped_transforms;
-          
+
           // map_frame -> odom
           stamped_transform.header.frame_id = node_options_.map_frame;
           stamped_transform.child_frame_id =
@@ -463,11 +462,12 @@ void Node::PublishLocalTrajectoryData(const ::ros::TimerEvent& timer_event) {
           stamped_transform.transform = ToGeometryMsgTransform(
               tracking_to_local * (*trajectory_data.published_to_tracking));
           stamped_transforms.push_back(stamped_transform);
-          
+
           // 发布 map_frame -> odom -> published_frame 的tf
           tf_broadcaster_.sendTransform(stamped_transforms);
-        } 
-        // cartographer不需要提供odom坐标系,则发布 map_frame -> published_frame 的tf
+        }
+        // cartographer不需要提供odom坐标系,则发布 map_frame -> published_frame
+        // 的tf
         else {
           stamped_transform.header.frame_id = node_options_.map_frame;
           stamped_transform.child_frame_id =
@@ -478,7 +478,7 @@ void Node::PublishLocalTrajectoryData(const ::ros::TimerEvent& timer_event) {
           tf_broadcaster_.sendTransform(stamped_transform);
         }
       }
-      
+
       // publish_tracked_pose 默认为false, 默认不发布
       // 如果设置为true, 就发布一个在tracking_frame处的pose
       if (node_options_.publish_tracked_pose) {
@@ -545,7 +545,7 @@ Node::ComputeExpectedSensorIds(const TrajectoryOptions& options) const {
       std::string id;   // topic的名字
     };
   */
- 
+
   using SensorId = cartographer::mapping::TrajectoryBuilderInterface::SensorId;
   using SensorType = SensorId::SensorType;
   std::set<SensorId> expected_topics;
@@ -601,7 +601,6 @@ Node::ComputeExpectedSensorIds(const TrajectoryOptions& options) const {
  * @return int 新生成的轨迹的id
  */
 int Node::AddTrajectory(const TrajectoryOptions& options) {
-
   const std::set<cartographer::mapping::TrajectoryBuilderInterface::SensorId>
       expected_sensor_ids = ComputeExpectedSensorIds(options);
 
@@ -621,8 +620,10 @@ int Node::AddTrajectory(const TrajectoryOptions& options) {
   // 创建了一个3s执行一次的定时器,由于oneshot=true, 所以只执行一次
   // 检查设置的topic名字是否在ros中存在, 不存在则报错
   wall_timers_.push_back(node_handle_.createWallTimer(
-      ::ros::WallDuration(kTopicMismatchCheckDelaySec), // kTopicMismatchCheckDelaySec = 3s
-      &Node::MaybeWarnAboutTopicMismatch, this, /*oneshot=*/true));
+      ::ros::WallDuration(
+          kTopicMismatchCheckDelaySec),  // kTopicMismatchCheckDelaySec = 3s
+      &Node::MaybeWarnAboutTopicMismatch,
+      this, /*oneshot=*/true));
 
   // 将topic名字保存下来,用于之后的新建轨迹时检查topic名字是否重复
   for (const auto& sensor_id : expected_sensor_ids) {
@@ -634,9 +635,9 @@ int Node::AddTrajectory(const TrajectoryOptions& options) {
 
 /**
  * @brief 订阅话题与注册回调函数
- * 
+ *
  * @param[in] options 配置参数
- * @param[in] trajectory_id 轨迹id  
+ * @param[in] trajectory_id 轨迹id
  */
 void Node::LaunchSubscribers(const TrajectoryOptions& options,
                              const int trajectory_id) {
@@ -659,7 +660,7 @@ void Node::LaunchSubscribers(const TrajectoryOptions& options,
              &node_handle_, this),
          topic});
   }
-  
+
   // point_clouds 的订阅与注册回调函数
   for (const std::string& topic :
        ComputeRepeatedTopicNames(kPointCloud2Topic, options.num_point_clouds)) {
@@ -706,11 +707,8 @@ void Node::LaunchSubscribers(const TrajectoryOptions& options,
   if (options.use_landmarks) {
     subscribers_[trajectory_id].push_back(
         {SubscribeWithHandler<cartographer_ros_msgs::LandmarkList>(
-             &Node::HandleLandmarkMessage, 
-             trajectory_id, 
-             kLandmarkTopic,
-             &node_handle_, 
-             this),
+             &Node::HandleLandmarkMessage, trajectory_id, kLandmarkTopic,
+             &node_handle_, this),
          kLandmarkTopic});
   }
 }
@@ -732,7 +730,8 @@ bool Node::ValidateTrajectoryOptions(const TrajectoryOptions& options) {
 bool Node::ValidateTopicNames(const TrajectoryOptions& options) {
   for (const auto& sensor_id : ComputeExpectedSensorIds(options)) {
     const std::string& topic = sensor_id.id;
-    // 如果topic能够在subscribed_topics_中找到, 证明这个topic名字被之前的轨迹使用了
+    // 如果topic能够在subscribed_topics_中找到,
+    // 证明这个topic名字被之前的轨迹使用了
     if (subscribed_topics_.count(topic) > 0) {
       LOG(ERROR) << "Topic name [" << topic << "] is already used.";
       return false;
@@ -828,7 +827,7 @@ cartographer_ros_msgs::StatusResponse Node::FinishTrajectoryUnderLock(
  * @brief 通过服务来开始一条新的轨迹
  *
  * @param[in] request
- * 配置文件的目录与名字, 是否使用初始位姿, 初始位姿以及其是相对于哪条轨迹的id, 
+ * 配置文件的目录与名字, 是否使用初始位姿, 初始位姿以及其是相对于哪条轨迹的id,
  * @param[out] response 返回轨迹的状态与id
  * @return true: ROS的service只能返回true, 返回false程序会中断
  */
@@ -1001,7 +1000,7 @@ bool Node::HandleFinishTrajectory(
 
 /**
  * @brief
- * 当前状态序列化为proto流文件.如果将'include_unfinished_submaps'设置为true, 
+ * 当前状态序列化为proto流文件.如果将'include_unfinished_submaps'设置为true,
  * 则未完成的子图（即尚未接收到所有测距仪数据插入的子图）将包含在序列化状态中.
  *
  * @param[in] request 要生成的文件名,以及是否包含未完成的submap
@@ -1014,13 +1013,14 @@ bool Node::HandleWriteState(
   {
     absl::MutexLock lock(&mutex_);
     // 直接调用cartographer的map_builder_的SerializeStateToFile()函数进行文件的保存
-    if (map_builder_bridge_.SerializeState(request.filename,
-                                          request.include_unfinished_submaps)) {
+    if (map_builder_bridge_.SerializeState(
+            request.filename, request.include_unfinished_submaps)) {
       response.status.code = cartographer_ros_msgs::StatusCode::OK;
       response.status.message =
           absl::StrCat("State written to '", request.filename, "'.");
     } else {
-      response.status.code = cartographer_ros_msgs::StatusCode::INVALID_ARGUMENT;
+      response.status.code =
+          cartographer_ros_msgs::StatusCode::INVALID_ARGUMENT;
       response.status.message =
           absl::StrCat("Failed to write '", request.filename, "'.");
     }
@@ -1033,9 +1033,10 @@ bool Node::HandleWriteState(
     const std::string suffix = ".pbstream";
     std::string prefix =
         request.filename.substr(0, request.filename.size() - suffix.size());
-    
+
     LOG(INFO) << "Saving map to pcd files ...";
-    pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_point_cloud_map(new pcl::PointCloud<pcl::PointXYZ>());
+    pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_point_cloud_map(
+        new pcl::PointCloud<pcl::PointXYZ>());
     pcl::fromROSMsg(ros_point_cloud_map_, *pcl_point_cloud_map);
     pcl::io::savePCDFileASCII(prefix + ".pcd", *pcl_point_cloud_map);
     LOG(INFO) << "Pcd written to " << prefix << ".pcd";
@@ -1110,7 +1111,7 @@ void Node::RunFinalOptimization() {
  * @brief 处理里程计数据,里程计的数据走向有2个
  * 第1个是传入PoseExtrapolator,用于位姿预测
  * 第2个是传入SensorBridge,使用其传感器处理函数进行里程计数据处理
- * 
+ *
  * @param[in] trajectory_id 轨迹id
  * @param[in] sensor_id 里程计的topic名字
  * @param[in] msg 里程计的ros格式的数据
@@ -1159,7 +1160,7 @@ void Node::HandleLandmarkMessage(
  * @brief 处理imu数据,imu的数据走向有2个
  * 第1个是传入PoseExtrapolator,用于位姿预测与重力方向的确定
  * 第2个是传入SensorBridge,使用其传感器处理函数进行imu数据处理
- * 
+ *
  * @param[in] trajectory_id 轨迹id
  * @param[in] sensor_id imu的topic名字
  * @param[in] msg imu的ros格式的数据
@@ -1236,7 +1237,6 @@ void Node::LoadState(const std::string& state_filename,
 // 检查设置的topic名字是否在ros中存在, 不存在则报错
 void Node::MaybeWarnAboutTopicMismatch(
     const ::ros::WallTimerEvent& unused_timer_event) {
-
   // note: 使用ros的master的api进行topic名字的获取
   ::ros::master::V_TopicInfo ros_topics;
   ::ros::master::getTopics(ros_topics);
@@ -1255,7 +1255,6 @@ void Node::MaybeWarnAboutTopicMismatch(
   for (const auto& entry : subscribers_) {
     int trajectory_id = entry.first;
     for (const auto& subscriber : entry.second) {
-
       // 获取实际订阅的topic名字
       std::string resolved_topic = node_handle_.resolveName(subscriber.topic);
 
@@ -1290,21 +1289,24 @@ void Node::PublishPointCloudMap(const ::ros::WallTimerEvent& timer_event) {
       map_builder_bridge_.GetTrajectoryNodes();
 
   // 如果个数没变就不进行地图发布
-  size_t trajectory_nodes_size = trajectory_nodes->SizeOfTrajectoryOrZero(trajectory_id);
-  if (last_trajectory_nodes_size_ == trajectory_nodes_size)
-    return;
+  size_t trajectory_nodes_size =
+      trajectory_nodes->SizeOfTrajectoryOrZero(trajectory_id);
+  if (last_trajectory_nodes_size_ == trajectory_nodes_size) return;
   last_trajectory_nodes_size_ = trajectory_nodes_size;
 
   absl::MutexLock lock(&point_cloud_map_mutex_);
-  pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud_map(new pcl::PointCloud<pcl::PointXYZ>());
-  pcl::PointCloud<pcl::PointXYZ>::Ptr node_point_cloud(new pcl::PointCloud<pcl::PointXYZ>());
-  
+  pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud_map(
+      new pcl::PointCloud<pcl::PointXYZ>());
+  pcl::PointCloud<pcl::PointXYZ>::Ptr node_point_cloud(
+      new pcl::PointCloud<pcl::PointXYZ>());
+
   // 遍历轨迹0的所有优化后的节点
   auto node_it = trajectory_nodes->BeginOfTrajectory(trajectory_id);
   auto end_it = trajectory_nodes->EndOfTrajectory(trajectory_id);
   for (; node_it != end_it; ++node_it) {
     auto& trajectory_node = trajectory_nodes->at(node_it->id);
-    auto& high_resolution_point_cloud = trajectory_node.constant_data->high_resolution_point_cloud;
+    auto& high_resolution_point_cloud =
+        trajectory_node.constant_data->high_resolution_point_cloud;
     auto& global_pose = trajectory_node.global_pose;
 
     if (trajectory_node.constant_data != nullptr) {
@@ -1321,7 +1323,7 @@ void Node::PublishPointCloudMap(const ::ros::WallTimerEvent& timer_event) {
       // 将每个节点的点云组合在一起
       *point_cloud_map += *node_point_cloud;
     }
-  } // end for
+  }  // end for
 
   ros_point_cloud_map_.data.clear();
   pcl::toROSMsg(*point_cloud_map, ros_point_cloud_map_);

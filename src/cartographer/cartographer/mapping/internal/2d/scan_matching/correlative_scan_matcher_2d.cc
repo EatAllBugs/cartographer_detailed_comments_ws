@@ -43,8 +43,9 @@ SearchParameters::SearchParameters(const double linear_search_window,
   // 根据论文里的公式 求得角度分辨率 angular_perturbation_step_size
   const double kSafetyMargin = 1. - 1e-3;
   angular_perturbation_step_size =
-      kSafetyMargin * std::acos(1. - common::Pow2(resolution) /
-                                         (2. * common::Pow2(max_scan_range)));
+      kSafetyMargin *
+      std::acos(1. -
+                common::Pow2(resolution) / (2. * common::Pow2(max_scan_range)));
 
   // 范围除以分辨率得到个数
   num_angular_perturbations =
@@ -173,7 +174,8 @@ std::vector<DiscreteScan2D> DiscretizeScans(
   discrete_scans.reserve(scans.size());
 
   for (const sensor::PointCloud& scan : scans) {
-    // discrete_scans中的每一个 DiscreteScan2D 的size设置为这一帧点云中所有点的个数
+    // discrete_scans中的每一个 DiscreteScan2D
+    // 的size设置为这一帧点云中所有点的个数
     discrete_scans.emplace_back();
     discrete_scans.back().reserve(scan.size());
 

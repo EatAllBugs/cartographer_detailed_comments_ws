@@ -204,8 +204,8 @@ PoseGraphStub::constraints() const {
   google::protobuf::Empty request;
   async_grpc::Client<handlers::GetConstraintsSignature> client(client_channel_);
   ::grpc::Status status;
-  CHECK(client.Write(request, &status))
-      << "Failed to get constraints: " << status.error_message();
+  CHECK(client.Write(request, &status)) << "Failed to get constraints: "
+                                        << status.error_message();
   return mapping::FromProto(client.response().constraints());
 }
 

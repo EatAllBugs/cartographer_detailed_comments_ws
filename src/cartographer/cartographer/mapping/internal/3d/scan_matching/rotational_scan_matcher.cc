@@ -90,10 +90,12 @@ void AddPointCloudSliceToHistogram(const sensor::PointCloud& slice,
       continue;
     }
     const float angle = common::atan2(delta);
-    
-    // 权重的计算思想，当ab和bc*乎垂直时, 说明ab可能是一个垂直于激光扫描线束的*面, 
-    // 这时探测结果应该是比较准确的, 相反, 如果ab'如何过b‘c*乎*行时, 
-    // 说明扫描线束乎行与障碍物, 这时可能探测误差较大（可能由传感器引起, 也有可能是孔洞、玻璃等）
+
+    // 权重的计算思想，当ab和bc*乎垂直时,
+    // 说明ab可能是一个垂直于激光扫描线束的*面,
+    // 这时探测结果应该是比较准确的, 相反, 如果ab'如何过b‘c*乎*行时,
+    // 说明扫描线束乎行与障碍物, 这时可能探测误差较大（可能由传感器引起,
+    // 也有可能是孔洞、玻璃等）
     // 因此权重应该降低
     const float value = std::max(
         0.f, 1.f - std::abs(delta.normalized().dot(direction.normalized())));

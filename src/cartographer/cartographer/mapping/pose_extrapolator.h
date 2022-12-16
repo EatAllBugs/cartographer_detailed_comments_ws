@@ -92,13 +92,16 @@ class PoseExtrapolator : public PoseExtrapolatorInterface {
   std::deque<sensor::ImuData> imu_data_;
 
   // c++11: std::unique_ptr 是独享被管理对象指针所有权的智能指针
-  // 它无法复制到其他 unique_ptr, 也无法通过值传递到函数,也无法用于需要副本的任何标准模板库 (STL) 算法
+  // 它无法复制到其他 unique_ptr,
+  // 也无法通过值传递到函数,也无法用于需要副本的任何标准模板库 (STL) 算法
   // 只能通过 std::move() 来移动unique_ptr
   // std::make_unique 是 C++14 才有的特性
 
-  std::unique_ptr<ImuTracker> imu_tracker_;               // 保存与预测当前姿态
-  std::unique_ptr<ImuTracker> odometry_imu_tracker_;      // 用于计算里程计的姿态的ImuTracker
-  std::unique_ptr<ImuTracker> extrapolation_imu_tracker_; // 用于预测姿态的ImuTracker
+  std::unique_ptr<ImuTracker> imu_tracker_;  // 保存与预测当前姿态
+  std::unique_ptr<ImuTracker>
+      odometry_imu_tracker_;  // 用于计算里程计的姿态的ImuTracker
+  std::unique_ptr<ImuTracker>
+      extrapolation_imu_tracker_;  // 用于预测姿态的ImuTracker
   TimedPose cached_extrapolated_pose_;
 
   std::deque<sensor::OdometryData> odometry_data_;

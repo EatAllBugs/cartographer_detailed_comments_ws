@@ -62,13 +62,13 @@ CeresScanMatcher2D::~CeresScanMatcher2D() {}
 
 /**
  * @brief 基于Ceres的扫描匹配
- * 
+ *
  * @param[in] target_translation 预测出来的先验位置, 只有xy
  * @param[in] initial_pose_estimate (校正后的)先验位姿, 有xy与theta
  * @param[in] point_cloud 用于匹配的点云 点云的原点位于local坐标系原点
  * @param[in] grid 用于匹配的栅格地图
  * @param[out] pose_estimate 优化之后的位姿
- * @param[out] summary 
+ * @param[out] summary
  */
 void CeresScanMatcher2D::Match(const Eigen::Vector2d& target_translation,
                                const transform::Rigid2d& initial_pose_estimate,
@@ -106,15 +106,18 @@ void CeresScanMatcher2D::Match(const Eigen::Vector2d& target_translation,
   CHECK_GT(options_.translation_weight(), 0.);
   problem.AddResidualBlock(
       TranslationDeltaCostFunctor2D::CreateAutoDiffCostFunction(
-          options_.translation_weight(), target_translation), // 平移的目标值, 没有使用校准后的平移
-      nullptr /* loss function */, ceres_pose_estimate);      // 平移的初值
+          options_.translation_weight(),
+          target_translation),  // 平移的目标值, 没有使用校准后的平移
+      nullptr /* loss function */,
+      ceres_pose_estimate);  // 平移的初值
 
   // 旋转的残差, 固定了角度不变
   CHECK_GT(options_.rotation_weight(), 0.);
   problem.AddResidualBlock(
       RotationDeltaCostFunctor2D::CreateAutoDiffCostFunction(
-          options_.rotation_weight(), ceres_pose_estimate[2]), // 角度的目标值
-      nullptr /* loss function */, ceres_pose_estimate);       // 角度的初值
+          options_.rotation_weight(), ceres_pose_estimate[2]),  // 角度的目标值
+      nullptr /* loss function */,
+      ceres_pose_estimate);  // 角度的初值
 
   // 根据配置进行求解
   ceres::Solve(ceres_solver_options_, &problem, summary);

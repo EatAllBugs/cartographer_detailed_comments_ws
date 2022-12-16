@@ -72,7 +72,7 @@ std::weak_ptr<Task> ThreadPoolForTesting::Schedule(std::unique_ptr<Task> task) {
 
 void ThreadPoolForTesting::WaitUntilIdle() {
   const auto predicate = [this]()
-                             EXCLUSIVE_LOCKS_REQUIRED(mutex_) { return idle_; };
+      EXCLUSIVE_LOCKS_REQUIRED(mutex_) { return idle_; };
   for (;;) {
     {
       absl::MutexLock locker(&mutex_);
