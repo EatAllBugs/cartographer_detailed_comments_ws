@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include "cartographer_ros/offline_node.h"
 #include "cartographer/mapping/map_builder.h"
+#include "cartographer_ros/offline_node.h"
 #include "cartographer_ros/ros_log_sink.h"
 #include "gflags/gflags.h"
 #include "ros/ros.h"
@@ -29,11 +29,11 @@ int main(int argc, char** argv) {
 
   cartographer_ros::ScopedRosLogSink ros_log_sink;
 
-  const cartographer_ros::MapBuilderFactory map_builder_factory = [](
-      const ::cartographer::mapping::proto::MapBuilderOptions&
-          map_builder_options) {
-    return ::cartographer::mapping::CreateMapBuilder(map_builder_options);
-  };
+  const cartographer_ros::MapBuilderFactory map_builder_factory =
+      [](const ::cartographer::mapping::proto::MapBuilderOptions&
+             map_builder_options) {
+        return ::cartographer::mapping::CreateMapBuilder(map_builder_options);
+      };
 
   cartographer_ros::RunOfflineNode(map_builder_factory);
 

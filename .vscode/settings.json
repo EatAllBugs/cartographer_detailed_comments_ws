@@ -1,9 +1,7 @@
 {
   "doxdocgen.generic.paramTemplate": "@param[in] {param} ",
-
   // 在注释中搜索以 * // , # , ; , 开头的标签！ -- 或 / * 
   "todo-tree.regex.regex": "((\\*|//|#|<!--|;|/\\*|^)\\s*($TAGS):|^\\s*- \\[ \\])",
-  
   "todo-tree.highlights.defaultHighlight": {
     "icon": "alert",
     "type": "text",
@@ -75,7 +73,6 @@
       "iconColour": "#f90",
       "type": "text-and-comment",
     },
-    
   },
   "python.autoComplete.extraPaths": [
     "/opt/ros/kinetic/lib/python2.7/dist-packages"
@@ -172,12 +169,16 @@
     "core": "cpp",
     "csignal": "cpp",
     "any": "cpp",
-    "future": "cpp"
+    "future": "cpp",
+    "memory_resource": "cpp",
+    "random": "cpp",
+    "variant": "cpp"
   },
   "python.autoComplete.extraPaths": [
     "/opt/ros/kinetic/lib/python2.7/dist-packages"
   ],
   "python.analysis.extraPaths": [
     "/opt/ros/kinetic/lib/python2.7/dist-packages"
-  ]
+  ],
+  "cmake.configureOnOpen": true
 }

@@ -112,8 +112,8 @@ TEST(ProbabilityValuesTest, CellUpdate) {
     cell_cg_post_update = correspondence_table[cell_cg_pre_update];
     p_post = ValueToProbability(cell_pg_post_update);
     c_post = ValueToCorrespondenceCost(cell_cg_post_update);
-    EXPECT_NEAR(p_post, 1.f - c_post, 5e-5) << "p " << p << " "
-                                            << p_post - 1.f + c_post;
+    EXPECT_NEAR(p_post, 1.f - c_post, 5e-5)
+        << "p " << p << " " << p_post - 1.f + c_post;
   }
 }
 
@@ -146,8 +146,8 @@ TEST(ProbabilityValuesTest, MultipleCellUpdate) {
     }
     p_post = ValueToProbability(cell_pg_post_update);
     c_post = ValueToCorrespondenceCost(cell_cg_post_update);
-    EXPECT_NEAR(p_post, 1.f - c_post, 5e-5) << "p " << p << " p_post " << p_post
-                                            << " " << p_post - 1.f + c_post;
+    EXPECT_NEAR(p_post, 1.f - c_post, 5e-5)
+        << "p " << p << " p_post " << p_post << " " << p_post - 1.f + c_post;
   }
 }
 

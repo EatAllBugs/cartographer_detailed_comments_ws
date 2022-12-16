@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#include "ros/ros.h"
 #include "cartographer/common/time.h"
 #include "cartographer_ros/ros_log_sink.h"
 #include "cartographer_ros/time_conversion.h"
 #include "gflags/gflags.h"
 #include "nav_msgs/Odometry.h"
+#include "ros/ros.h"
 #include "ros/time.h"
 #include "rosbag/bag.h"
 #include "rosbag/view.h"

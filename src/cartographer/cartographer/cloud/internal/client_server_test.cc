@@ -123,19 +123,20 @@ class ClientServerTestBase : public T {
     trajectory_builder_options_ = mapping::CreateTrajectoryBuilderOptions(
         trajectory_builder_parameters.get());
     number_of_insertion_results_ = 0;
-    local_slam_result_callback_ = [this](
-        int, common::Time, transform::Rigid3d local_pose, sensor::RangeData,
-        std::unique_ptr<
-            const mapping::TrajectoryBuilderInterface::InsertionResult>
-            insertion_result) {
-      std::unique_lock<std::mutex> lock(local_slam_result_mutex_);
-      if (insertion_result) {
-        ++number_of_insertion_results_;
-      }
-      local_slam_result_poses_.push_back(local_pose);
-      lock.unlock();
-      local_slam_result_condition_.notify_all();
-    };
+    local_slam_result_callback_ =
+        [this](int, common::Time, transform::Rigid3d local_pose,
+               sensor::RangeData,
+               std::unique_ptr<
+                   const mapping::TrajectoryBuilderInterface::InsertionResult>
+                   insertion_result) {
+          std::unique_lock<std::mutex> lock(local_slam_result_mutex_);
+          if (insertion_result) {
+            ++number_of_insertion_results_;
+          }
+          local_slam_result_poses_.push_back(local_pose);
+          lock.unlock();
+          local_slam_result_condition_.notify_all();
+        };
   }
 
   void InitializeRealServer() {
@@ -371,9 +372,10 @@ TEST_P(ClientServerTestByGridType, LocalSlam2D) {
   EXPECT_EQ(stub_->pose_graph()->GetTrajectoryStates().at(trajectory_id),
             PoseGraphInterface::TrajectoryState::FINISHED);
   EXPECT_EQ(local_slam_result_poses_.size(), measurements.size());
-  EXPECT_NEAR(kTravelDistance, (local_slam_result_poses_.back().translation() -
-                                local_slam_result_poses_.front().translation())
-                                   .norm(),
+  EXPECT_NEAR(kTravelDistance,
+              (local_slam_result_poses_.back().translation() -
+               local_slam_result_poses_.front().translation())
+                  .norm(),
               0.1 * kTravelDistance);
   server_->Shutdown();
 }
@@ -446,9 +448,10 @@ TEST_F(ClientServerTest, GlobalSlam3D) {
   // expect one less.
   WaitForLocalSlamResults(measurements.size() - 1);
   stub_->FinishTrajectory(trajectory_id);
-  EXPECT_NEAR(kTravelDistance, (local_slam_result_poses_.back().translation() -
-                                local_slam_result_poses_.front().translation())
-                                   .norm(),
+  EXPECT_NEAR(kTravelDistance,
+              (local_slam_result_poses_.back().translation() -
+               local_slam_result_poses_.front().translation())
+                  .norm(),
               0.1 * kTravelDistance);
   server_->Shutdown();
 }
@@ -534,9 +537,10 @@ TEST_P(ClientServerTestByGridType, LocalSlam2DWithUploadingServer) {
 
   stub_for_uploading_server_->FinishTrajectory(trajectory_id);
   EXPECT_EQ(local_slam_result_poses_.size(), measurements.size());
-  EXPECT_NEAR(kTravelDistance, (local_slam_result_poses_.back().translation() -
-                                local_slam_result_poses_.front().translation())
-                                   .norm(),
+  EXPECT_NEAR(kTravelDistance,
+              (local_slam_result_poses_.back().translation() -
+               local_slam_result_poses_.front().translation())
+                  .norm(),
               0.1 * kTravelDistance);
   uploading_server_->Shutdown();
   server_->Shutdown();
@@ -634,13 +638,17 @@ TEST_P(ClientServerTestByGridType, LoadStateAndDelete) {
   InitializeStub();
 
   // Load text proto into in_memory_reader.
-  auto reader = ProtoReaderFromStrings(
-      kSerializationHeaderProtoString,
-      {
-          kPoseGraphProtoString, kAllTrajectoryBuilderOptionsProtoString,
-          kSubmapProtoString, kNodeProtoString, kImuDataProtoString,
-          kOdometryDataProtoString, kLandmarkDataProtoString,
-      });
+  auto reader =
+      ProtoReaderFromStrings(kSerializationHeaderProtoString,
+                             {
+                                 kPoseGraphProtoString,
+                                 kAllTrajectoryBuilderOptionsProtoString,
+                                 kSubmapProtoString,
+                                 kNodeProtoString,
+                                 kImuDataProtoString,
+                                 kOdometryDataProtoString,
+                                 kLandmarkDataProtoString,
+                             });
 
   auto trajectory_remapping = stub_->LoadState(reader.get(), true);
   int expected_trajectory_id = 0;
@@ -669,13 +677,17 @@ TEST_P(ClientServerTestByGridType, LoadUnfrozenStateAndDelete) {
   InitializeStub();
 
   // Load text proto into in_memory_reader.
-  auto reader = ProtoReaderFromStrings(
-      kSerializationHeaderProtoString,
-      {
-          kPoseGraphProtoString, kAllTrajectoryBuilderOptionsProtoString,
-          kSubmapProtoString, kNodeProtoString, kImuDataProtoString,
-          kOdometryDataProtoString, kLandmarkDataProtoString,
-      });
+  auto reader =
+      ProtoReaderFromStrings(kSerializationHeaderProtoString,
+                             {
+                                 kPoseGraphProtoString,
+                                 kAllTrajectoryBuilderOptionsProtoString,
+                                 kSubmapProtoString,
+                                 kNodeProtoString,
+                                 kImuDataProtoString,
+                                 kOdometryDataProtoString,
+                                 kLandmarkDataProtoString,
+                             });
 
   auto trajectory_remapping =
       stub_->LoadState(reader.get(), false /* load_frozen_state */);

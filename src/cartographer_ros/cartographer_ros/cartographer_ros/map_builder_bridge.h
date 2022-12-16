@@ -50,8 +50,8 @@
 namespace cartographer_ros {
 
 // lx add
-using ::cartographer::mapping::NodeId;
 using ::cartographer::mapping::MapById;
+using ::cartographer::mapping::NodeId;
 using ::cartographer::mapping::TrajectoryNode;
 
 class MapBuilderBridge {

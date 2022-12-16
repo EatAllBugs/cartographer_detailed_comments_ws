@@ -48,8 +48,9 @@ double ComputeRotationDeltaSquaredCost(
 
 TEST(RotationDeltaCostFunctor3DTest, SameRotationGivesZeroCost) {
   EXPECT_NEAR(
-      0., ComputeRotationDeltaSquaredCost(Eigen::Quaterniond::Identity(), 1.0,
-                                          Eigen::Quaterniond::Identity()),
+      0.,
+      ComputeRotationDeltaSquaredCost(Eigen::Quaterniond::Identity(), 1.0,
+                                      Eigen::Quaterniond::Identity()),
       kPrecision);
 
   Eigen::Quaterniond rotation(

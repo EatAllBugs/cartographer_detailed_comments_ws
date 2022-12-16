@@ -67,8 +67,8 @@ using TrajectoryState =
     ::cartographer::mapping::PoseGraphInterface::TrajectoryState;
 
 // lx add
-using ::cartographer::mapping::NodeId;
 using ::cartographer::mapping::MapById;
+using ::cartographer::mapping::NodeId;
 using ::cartographer::mapping::TrajectoryNode;
 using ::cartographer::sensor::RangefinderPoint;
 
@@ -210,13 +210,11 @@ Node::Node(
   wall_timers_.push_back(node_handle_.createWallTimer(
       ::ros::WallDuration(
           node_options_.trajectory_publish_period_sec),  // 30e-3s
-      &Node::PublishTrajectoryNodeList,
-      this));
+      &Node::PublishTrajectoryNodeList, this));
   wall_timers_.push_back(node_handle_.createWallTimer(
       ::ros::WallDuration(
           node_options_.trajectory_publish_period_sec),  // 30e-3s
-      &Node::PublishLandmarkPosesList,
-      this));
+      &Node::PublishLandmarkPosesList, this));
   wall_timers_.push_back(node_handle_.createWallTimer(
       ::ros::WallDuration(kConstraintPublishPeriodSec),  // 0.5s
       &Node::PublishConstraintList, this));
@@ -622,8 +620,7 @@ int Node::AddTrajectory(const TrajectoryOptions& options) {
   wall_timers_.push_back(node_handle_.createWallTimer(
       ::ros::WallDuration(
           kTopicMismatchCheckDelaySec),  // kTopicMismatchCheckDelaySec = 3s
-      &Node::MaybeWarnAboutTopicMismatch,
-      this, /*oneshot=*/true));
+      &Node::MaybeWarnAboutTopicMismatch, this, /*oneshot=*/true));
 
   // 将topic名字保存下来,用于之后的新建轨迹时检查topic名字是否重复
   for (const auto& sensor_id : expected_sensor_ids) {

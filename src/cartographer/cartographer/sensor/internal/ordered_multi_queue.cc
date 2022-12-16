@@ -77,8 +77,8 @@ void OrderedMultiQueue::Add(const QueueKey& queue_key,
   auto it = queues_.find(queue_key);
   // 如果queue_key不在queues_中, 就忽略data
   if (it == queues_.end()) {
-    LOG_EVERY_N(WARNING, 1000) << "Ignored data for queue: '" << queue_key
-                               << "'";
+    LOG_EVERY_N(WARNING, 1000)
+        << "Ignored data for queue: '" << queue_key << "'";
     return;
   }
 

@@ -35,8 +35,9 @@ class ImuTrackerTest : public ::testing::Test {
     imu_tracker_ = absl::make_unique<ImuTracker>(kGravityTimeConstant, time_);
     angular_velocity_ = Eigen::Vector3d(0, 0, 0);
     linear_acceleration_ = Eigen::Vector3d(0, 0, 9.9);
-    EXPECT_NEAR(0., imu_tracker_->orientation().angularDistance(
-                        Eigen::Quaterniond::Identity()),
+    EXPECT_NEAR(0.,
+                imu_tracker_->orientation().angularDistance(
+                    Eigen::Quaterniond::Identity()),
                 kPrecision);
   }
 

@@ -68,9 +68,9 @@ CreatePipelineBuilder(
                         carto::common::LuaParameterDictionary* const dictionary,
                         carto::io::PointsProcessor* const next)
                         -> std::unique_ptr<carto::io::PointsProcessor> {
-                          return RosMapWritingPointsProcessor::FromDictionary(
-                              file_writer_factory, dictionary, next);
-                        });
+                      return RosMapWritingPointsProcessor::FromDictionary(
+                          file_writer_factory, dictionary, next);
+                    });
   return builder;
 }
 
@@ -224,9 +224,8 @@ void AssetsWriter::Run(const std::string& configuration_directory,
           }
         }
 
-        while (!delayed_messages.empty() &&
-               delayed_messages.front().getTime() <
-                   message.getTime() - kDelay) {
+        while (!delayed_messages.empty() && delayed_messages.front().getTime() <
+                                                message.getTime() - kDelay) {
           const rosbag::MessageInstance& delayed_message =
               delayed_messages.front();
 

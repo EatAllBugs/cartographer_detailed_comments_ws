@@ -544,8 +544,9 @@ void OptimizationProblem3D::Solve(
                     Eigen::AngleAxisd(
                         transform::GetYaw(fixed_frame_pose_in_map.rotation()),
                         Eigen::Vector3d::UnitZ())),
-                nullptr, absl::make_unique<ceres::AutoDiffLocalParameterization<
-                             YawOnlyQuaternionPlus, 4, 1>>(),
+                nullptr,
+                absl::make_unique<ceres::AutoDiffLocalParameterization<
+                    YawOnlyQuaternionPlus, 4, 1>>(),
                 &problem));
         fixed_frame_pose_initialized = true;
       }

@@ -69,8 +69,7 @@ std::unique_ptr<std::vector<float>> PrecomputeValueToBoundedFloat(
     result->push_back(SlowValueToBoundedFloat(
         static_cast<uint16>(value) &
             ~kUpdateMarker,  // 取右边15位的数据, 0-32767
-        unknown_value,
-        unknown_result, lower_bound, upper_bound));
+        unknown_value, unknown_result, lower_bound, upper_bound));
   }
   return result;
 }

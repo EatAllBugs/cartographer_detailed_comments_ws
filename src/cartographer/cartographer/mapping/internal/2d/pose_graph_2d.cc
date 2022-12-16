@@ -779,8 +779,9 @@ void PoseGraph2D::WaitForAllComputations() {
     if (num_trajectory_nodes != num_finished_nodes_at_start) {
       std::ostringstream progress_info;
       progress_info << "Optimizing: " << std::fixed << std::setprecision(1)
-                    << 100. * (constraint_builder_.GetNumFinishedNodes() -
-                               num_finished_nodes_at_start) /
+                    << 100. *
+                           (constraint_builder_.GetNumFinishedNodes() -
+                            num_finished_nodes_at_start) /
                            (num_trajectory_nodes - num_finished_nodes_at_start)
                     << "%...";
       std::cout << "\r\x1b[K" << progress_info.str() << std::flush;
@@ -790,8 +791,10 @@ void PoseGraph2D::WaitForAllComputations() {
   // First wait for the work queue to drain so that it's safe to schedule
   // a WhenDone() callback.
   {
-    const auto predicate = [this]() EXCLUSIVE_LOCKS_REQUIRED(
-        work_queue_mutex_) { return work_queue_ == nullptr; };
+    const auto predicate = [this]()
+                               EXCLUSIVE_LOCKS_REQUIRED(work_queue_mutex_) {
+                                 return work_queue_ == nullptr;
+                               };
     absl::MutexLock locker(&work_queue_mutex_);
     // 等待工作队列为空
     while (!work_queue_mutex_.AwaitWithTimeout(
@@ -816,8 +819,9 @@ void PoseGraph2D::WaitForAllComputations() {
             notification = true;
           });
 
-  const auto predicate = [&notification]()
-      EXCLUSIVE_LOCKS_REQUIRED(mutex_) { return notification; };
+  const auto predicate = [&notification]() EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
+    return notification;
+  };
 
   // 等待直到notification为true
   while (!mutex_.AwaitWithTimeout(absl::Condition(&predicate),

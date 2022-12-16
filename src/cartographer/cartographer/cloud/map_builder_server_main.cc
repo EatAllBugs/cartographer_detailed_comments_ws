@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#include "cartographer/mapping/map_builder.h"
 #include "cartographer/cloud/map_builder_server_interface.h"
 #include "cartographer/cloud/map_builder_server_options.h"
+#include "cartographer/mapping/map_builder.h"
 #include "cartographer/metrics/register.h"
 #include "gflags/gflags.h"
 #include "glog/logging.h"

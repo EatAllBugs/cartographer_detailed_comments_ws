@@ -70,9 +70,9 @@ std::string Histogram::ToString(const int buckets) const {
       result += (i < (kMaxBarChars - bar)) ? " " : "#";
     }
     absl::StrAppend(&result, "\tCount: ", count, " (",
-                    count * 1e2f / values_.size(), "%)", "\tTotal: ",
-                    total_count, " (", total_count * 1e2f / values_.size(),
-                    "%)");
+                    count * 1e2f / values_.size(), "%)",
+                    "\tTotal: ", total_count, " (",
+                    total_count * 1e2f / values_.size(), "%)");
     lower_bound = upper_bound;
   }
   return result;

@@ -44,9 +44,11 @@ TEST(LandmarkCostFunctionTest, SmokeTest) {
   std::unique_ptr<ceres::CostFunction> cost_function(
       LandmarkCostFunction2D::CreateAutoDiffCostFunction(
           LandmarkObservation{
-              0 /* trajectory ID */, common::FromUniversal(5) /* time */,
+              0 /* trajectory ID */,
+              common::FromUniversal(5) /* time */,
               transform::Rigid3d::Translation(Eigen::Vector3d(1., 1., 1.)),
-              1. /* translation_weight */, 2. /* rotation_weight */,
+              1. /* translation_weight */,
+              2. /* rotation_weight */,
           },
           prev_node, next_node));
 

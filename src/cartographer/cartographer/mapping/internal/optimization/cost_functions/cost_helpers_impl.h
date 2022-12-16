@@ -224,13 +224,12 @@ InterpolateNodes2D(const T* const prev_node_pose,
       SlerpQuaternions(prev_node_rotation.data(), next_node_rotation.data(),
                        interpolation_parameter),
       // 通过插值公式计算出这个时刻的glboal位姿
-      std::array<T, 3>{{prev_node_pose[0] +
-                            interpolation_parameter *
-                                (next_node_pose[0] - prev_node_pose[0]),
-                        prev_node_pose[1] +
-                            interpolation_parameter *
-                                (next_node_pose[1] - prev_node_pose[1]),
-                        T(0)}});
+      std::array<T, 3>{
+          {prev_node_pose[0] + interpolation_parameter *
+                                   (next_node_pose[0] - prev_node_pose[0]),
+           prev_node_pose[1] + interpolation_parameter *
+                                   (next_node_pose[1] - prev_node_pose[1]),
+           T(0)}});
 }
 
 }  // namespace optimization

@@ -239,17 +239,18 @@ std::unique_ptr<GridInterface> ActiveSubmaps2D::CreateGrid(
       return absl::make_unique<ProbabilityGrid>(
           MapLimits(resolution,
                     // 左上角坐标为坐标系的最大值, origin位于地图的中间
-                    origin.cast<double>() +
-                        0.5 * kInitialSubmapSize * resolution *
-                            Eigen::Vector2d::Ones(),
+                    origin.cast<double>() + 0.5 * kInitialSubmapSize *
+                                                resolution *
+                                                Eigen::Vector2d::Ones(),
                     CellLimits(kInitialSubmapSize, kInitialSubmapSize)),
           &conversion_tables_);
     // tsdf地图
     case proto::GridOptions2D::TSDF:
       return absl::make_unique<TSDF2D>(
-          MapLimits(resolution, origin.cast<double>() +
-                                    0.5 * kInitialSubmapSize * resolution *
-                                        Eigen::Vector2d::Ones(),
+          MapLimits(resolution,
+                    origin.cast<double>() + 0.5 * kInitialSubmapSize *
+                                                resolution *
+                                                Eigen::Vector2d::Ones(),
                     CellLimits(kInitialSubmapSize, kInitialSubmapSize)),
           options_.range_data_inserter_options()
               .tsdf_range_data_inserter_options_2d()
@@ -275,8 +276,9 @@ void ActiveSubmaps2D::AddSubmap(const Eigen::Vector2f& origin) {
   }
   // 新建一个子图, 并保存指向新子图的智能指针
   submaps_.push_back(absl::make_unique<Submap2D>(
-      origin, std::unique_ptr<Grid2D>(
-                  static_cast<Grid2D*>(CreateGrid(origin).release())),
+      origin,
+      std::unique_ptr<Grid2D>(
+          static_cast<Grid2D*>(CreateGrid(origin).release())),
       &conversion_tables_));
 }
 

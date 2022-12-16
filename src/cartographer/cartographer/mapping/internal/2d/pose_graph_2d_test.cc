@@ -161,8 +161,9 @@ class PoseGraph2DTest : public ::testing::Test {
           })text");
       auto options = CreatePoseGraphOptions(parameter_dictionary.get());
       pose_graph_ = absl::make_unique<PoseGraph2D>(
-          options, absl::make_unique<optimization::OptimizationProblem2D>(
-                       options.optimization_problem_options()),
+          options,
+          absl::make_unique<optimization::OptimizationProblem2D>(
+              options.optimization_problem_options()),
           &thread_pool_);
     }
 

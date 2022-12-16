@@ -74,8 +74,9 @@ TEST(PoseExtrapolatorTest, EstimateGravityOrientationWithIMU) {
       common::FromSeconds(kPoseQueueDuration), kGravityTimeConstant, imu_data);
   Eigen::Quaterniond expected_orientation =
       FromTwoVectors(initial_gravity_acceleration, Eigen::Vector3d::UnitZ());
-  EXPECT_NEAR(0., extrapolator->EstimateGravityOrientation(current_time)
-                      .angularDistance(expected_orientation),
+  EXPECT_NEAR(0.,
+              extrapolator->EstimateGravityOrientation(current_time)
+                  .angularDistance(expected_orientation),
               kPrecision);
   Eigen::Vector3d gravity_acceleration(1.6, 2.0, 8.0);
   for (int i = 0; i < 10; ++i) {
@@ -85,8 +86,9 @@ TEST(PoseExtrapolatorTest, EstimateGravityOrientationWithIMU) {
   }
   expected_orientation =
       FromTwoVectors(gravity_acceleration, Eigen::Vector3d::UnitZ());
-  EXPECT_NEAR(0., extrapolator->EstimateGravityOrientation(current_time)
-                      .angularDistance(expected_orientation),
+  EXPECT_NEAR(0.,
+              extrapolator->EstimateGravityOrientation(current_time)
+                  .angularDistance(expected_orientation),
               kPrecision);
 }
 

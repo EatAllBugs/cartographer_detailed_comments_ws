@@ -261,9 +261,8 @@ std::vector<DiscreteScan3D> FastCorrelativeScanMatcher3D::GenerateDiscreteScans(
   }
   const float kSafetyMargin = 1.f - 1e-2f;
   const float angular_step_size =
-      kSafetyMargin * std::acos(1.f -
-                                common::Pow2(resolution_) /
-                                    (2.f * common::Pow2(max_scan_range)));
+      kSafetyMargin * std::acos(1.f - common::Pow2(resolution_) /
+                                          (2.f * common::Pow2(max_scan_range)));
   const int angular_window_size = common::RoundToInt(
       search_parameters.angular_search_window / angular_step_size);
   std::vector<float> angles;

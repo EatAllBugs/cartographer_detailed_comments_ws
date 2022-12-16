@@ -45,8 +45,9 @@ TEST(NormalEstimation2DTest, SinglePoint) {
     const double angle = static_cast<double>(angle_idx) /
                              static_cast<double>(num_angles) * 2. * M_PI -
                          M_PI;
-    range_data.returns = sensor::PointCloud({{Eigen::Vector3d{
-        std::cos(angle), std::sin(angle), 0.}.cast<float>()}});
+    range_data.returns = sensor::PointCloud(
+        {{Eigen::Vector3d{std::cos(angle), std::sin(angle), 0.}
+              .cast<float>()}});
     std::vector<float> normals;
     normals = EstimateNormals(range_data, options);
     EXPECT_NEAR(common::NormalizeAngleDifference(angle - normals[0] - M_PI),
